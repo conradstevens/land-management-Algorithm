@@ -1,4 +1,4 @@
-""Tree Planting Algorhythm, Program will gather Land Management related
+"""Tree Planting Algorhythm, Program will gather Land Management related
 information the fill the pice in the most efficient square wat"""
 
 from pathlib import Path
@@ -34,8 +34,6 @@ class PICE:
         self.hole_num = 0
         self.hole_total = 0
         self.hole_list = []
-
-
 
         # Hole Data
         self.dire = 'N'
@@ -123,7 +121,7 @@ class PICE:
 
         @rtype bool
         """
-        if self.find_char('•') == 'E' and self.find_char(1) == 'E':
+        if self.find_char('ï¿½') == 'E' and self.find_char(1) == 'E':
             return True
         else:
             return False
@@ -137,7 +135,7 @@ class PICE:
         @param y int
         @rtype str
         """
-        if self.see(x, y) == '•':
+        if self.see(x, y) == 'ï¿½':
             if self.trees_baged > 0:
                 return 'T'
             else:
@@ -182,13 +180,13 @@ class PICE:
                 ch = 'T'
             if ch == 'C':
                 colour = 'pink3'
-            if ch == '•':
+            if ch == 'ï¿½':
                 colour = 'white'
             if ch == '?':
                 colour = 'yellow'
 
         # Erasses Previous Character
-        label_box = Text(Point((x + 1) * 18, (y + 1) * 21), '¦')
+        label_box = Text(Point((x + 1) * 18, (y + 1) * 21), 'ï¿½')
         label_box.setTextColor('black')
         label_box.draw(windw)
 
@@ -276,8 +274,8 @@ class PICE:
         for row in range(len(self.data)):
             for col in range(len(self.data[row])):
                 if isinstance(self.data[row][col], int):
-                    self.data[row][col] = '•'
-                    self.draw_char(windw, col, row, '•')
+                    self.data[row][col] = 'ï¿½'
+                    self.draw_char(windw, col, row, 'ï¿½')
 
     def line_back(self, windw, move='none'):
         """
@@ -332,16 +330,16 @@ class PICE:
                 [h_x, h_y] == [int(self.x), int(self.y)]:  # if beside stop
             return
 
-        elif self.see(h_x + 1, h_y) == '•':
+        elif self.see(h_x + 1, h_y) == 'ï¿½':
             h_x += 1
 
-        elif self.see(h_x, h_y - 1) == '•':
+        elif self.see(h_x, h_y - 1) == 'ï¿½':
             h_y += -1
 
-        elif self.see(h_x - 1, h_y) == '•':
+        elif self.see(h_x - 1, h_y) == 'ï¿½':
             h_x += -1
 
-        elif self.see(h_x, h_y + 1) == '•':
+        elif self.see(h_x, h_y + 1) == 'ï¿½':
             h_y += 1
 
         # else:
@@ -504,31 +502,6 @@ def drawpice(win, pice):
         r += 1
         c = 0
         for space in line:
-            c += 1
-            label = Text(Point(c * 18, r * 21), space)
-            if space == 'T':
-                label.setTextColor('green2')
-            elif space == '?':
-                label.setTextColor('yellow')
-            elif space == 'C':
-                label.setTextColor('pink3')
-            else:
-                label.setTextColor('white')
-            label.draw(win)
-
-# Helper Functions
-
-pice = PICE('pice1.txt')
-# print(pice.height)
-# print(pice.width)
-# print(pice.see(10, 11))
-# print(pice.finished())
-# print(pice.find_char('C'))
-# print(pice.see(pice.find_char('C')[0], pice.find_char('C')[1]))
-
-# Making Window ----------------------------------------------------------------
-win = GraphWin('Tree Plnting Land Management', pice.width*20, pice.height*24)
-win.setBackground('black')
 
 # Create Planter ---------------------------------------------------------------
 [pice.x, pice.y] = [pice.find_char('C')[0], pice.find_char('C')[1]]
@@ -578,9 +551,9 @@ while not pice.finished():
             pice.move('u', win)
         # Dead walk to cash ----------------------------------------------------
 
-        elif pice.see(pice.x, pice.y + 1) in ['T', 'D', 'C', '•']:
+        elif pice.see(pice.x, pice.y + 1) in ['T', 'D', 'C', 'ï¿½']:
             pice.move('d', win)
-        elif pice.see(pice.x + 1, pice.y) in ['T', 'D', 'C', '•']:
+        elif pice.see(pice.x + 1, pice.y) in ['T', 'D', 'C', 'ï¿½']:
             pice.move('r', win)
 
     # Squaring off -------------------------------------------------------------
@@ -641,6 +614,31 @@ while not pice.finished():
 
 time.sleep(5.0)
 win.close()
+            c += 1
+            label = Text(Point(c * 18, r * 21), space)
+            if space == 'T':
+                label.setTextColor('green2')
+            elif space == '?':
+                label.setTextColor('yellow')
+            elif space == 'C':
+                label.setTextColor('pink3')
+            else:
+                label.setTextColor('white')
+            label.draw(win)
+
+# Helper Functions
+
+pice = PICE('pice1.txt')
+# print(pice.height)
+# print(pice.width)
+# print(pice.see(10, 11))
+# print(pice.finished())
+# print(pice.find_char('C'))
+# print(pice.see(pice.find_char('C')[0], pice.find_char('C')[1]))
+
+# Making Window ----------------------------------------------------------------
+win = GraphWin('Tree Plnting Land Management', pice.width*20, pice.height*24)
+win.setBackground('black')
 
 
 """

@@ -18,6 +18,6 @@ from Pice.Pice import Pice
 from Pice.Window import Windw
 
 if __name__ == '__main__':
-
-    window = Windw('vvv')
-    pice = Pice(window, 'C:/Users/conra/Documents/land-management-Algorithm/Pice/Pices/Pice1.txt')
+    windw = Windw(12)
+    pice = Pice(windw, 'C:/Users/conra/Documents/land-management-Algorithm/Pice/Pices/Pice1.txt')
+    pice.drawPice()

@@ -1,3 +1,4 @@
+import time as tm
 """
 land-management-Algorithm
 Has application to large scale land management, particularly forestry and agriculture.
@@ -16,8 +17,14 @@ algorithm in the next version of his book: 'Step by Step, a guide to tree planti
 
 from Pice.Pice import Pice
 from Pice.Window import Windw
+from Planter.Planter import Planter
 
 if __name__ == '__main__':
-    windw = Windw(12)
+    windw = Windw(18, 21)
     pice = Pice(windw, 'C:/Users/conra/Documents/land-management-Algorithm/Pice/Pices/Pice1.txt')
     pice.drawPice()
+    pice.placePlaner()
+
+    planter = Pice
+
+    tm.sleep(2)

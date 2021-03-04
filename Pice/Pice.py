@@ -1,4 +1,5 @@
 from Pice.Window import Windw
+import time as tm
 
 
 class Pice:
@@ -11,14 +12,13 @@ class Pice:
     width = 0
     height = 0
     piceMatrix = []
-    windw = Windw(-1)
+    windw = Windw(-1, -1)
+    planter = None
 
     def __init__(self, windw: Windw, filename: str):
         self.filename = filename
         self.loadPiceMatrix()
         self.windw = windw
-
-
 
     def __str__(self):
         for row in self.piceMatrix:
@@ -54,3 +54,45 @@ class Pice:
        Draws the pice for the first time
        :return: None"""
         self.windw.drawWindw(self.width, self.height)
+        rCount = 0
+        cCount = 0
+        for r in self.piceMatrix:
+            for c in r:
+                self.windw.drawChar(c, cCount, rCount)
+                cCount += 1
+            cCount = 0
+            rCount += 1
+
+    def placePlaner(self):
+        """
+        places the planter in the pice
+        :return: None
+        """
+        coordinates = self.findChar('C')
+        self.updatePice('☻', coordinates[0], coordinates[1])
+
+    def findChar(self, char):
+        """
+        Returns the coordinates of where the pice is
+        :return: List
+        """
+        rCount = 0
+        cCount = 0
+        for r in self.piceMatrix:
+            for c in r:
+                if c == char:
+                    return [cCount, rCount]
+                cCount += 1
+            cCount = 0
+            rCount += 1
+
+    def updatePice(self, char: str, x: int, y: int, clr=None):
+        """
+        Updates the text of one element in teh pice
+        :return: None
+        """
+        if char is None or len(char) > 1:
+            print("Warning Char > 1")
+
+        self.piceMatrix[y][x] = char
+        self.windw.drawChar(char, x, y, clr)

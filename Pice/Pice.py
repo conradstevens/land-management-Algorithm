@@ -1,24 +1,16 @@
 from Pice.Window import Windw
-import time as tm
 
 
 class Pice:
     """
     Keeps track of what is in the pice and updates and draws the pice
     """
-    filename = -1
     name = -1
     win = -1
     width = 0
     height = 0
     piceMatrix = []
     windw = Windw(-1, -1)
-    planter = None
-
-    def __init__(self, windw: Windw, filename: str):
-        self.filename = filename
-        self.loadPiceMatrix()
-        self.windw = windw
 
     def __str__(self):
         for row in self.piceMatrix:
@@ -26,12 +18,13 @@ class Pice:
                 print(char, end='')
             print('')
 
-    def loadPiceMatrix(self):
+    def loadPiceMatrix(self, windw: Windw, filename: str):
         """
         Loads the pice matrix
         :return:
         """
-        pice = open(self.filename, 'r')
+        self.windw = windw
+        pice = open(filename, 'r')
 
         line = pice.readline()
         while line != '':
@@ -63,13 +56,18 @@ class Pice:
             cCount = 0
             rCount += 1
 
-    def placePlaner(self):
+    def placePlaner(self, planter):
         """
         places the planter in the pice
         :return: None
         """
         coordinates = self.findChar('C')
-        self.updatePice('☻', coordinates[0], coordinates[1])
+        self.updateTile('☻', coordinates[0], coordinates[1])
+
+        # Assigns the planter Pice information
+        planter.x, planter.y = coordinates[0], coordinates[1]
+        planter.underTile = 'C'
+        planter.pice = self
 
     def findChar(self, char):
         """
@@ -86,7 +84,7 @@ class Pice:
             cCount = 0
             rCount += 1
 
-    def updatePice(self, char: str, x: int, y: int, clr=None):
+    def updateTile(self, char: str, x: int, y: int, clr=None):
         """
         Updates the text of one element in teh pice
         :return: None

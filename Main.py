@@ -18,13 +18,20 @@ algorithm in the next version of his book: 'Step by Step, a guide to tree planti
 from Pice.Pice import Pice
 from Pice.Window import Windw
 from Planter.Planter import Planter
+from Planter.Vision import Vision
 
 if __name__ == '__main__':
     windw = Windw(18, 21)
-    pice = Pice(windw, 'C:/Users/conra/Documents/land-management-Algorithm/Pice/Pices/Pice1.txt')
+    pice = Pice()
+    pice.loadPiceMatrix(windw, 'C:/Users/conra/Documents/land-management-Algorithm/Pice/Pices/Pice1.txt')
     pice.drawPice()
-    pice.placePlaner()
 
-    planter = Pice
+    planter = Planter(bagSize=100, viwDistance=8)
+    pice.placePlaner(planter)
 
-    tm.sleep(2)
+    planter.move(0, 10)
+    planter.getView()
+
+    # planter.move(1, 5)
+
+    tm.sleep(5)

@@ -62,4 +62,6 @@ def getDrawColor(ch: str):
         return 'pink3'
     if ch == '?':
         return 'yellow'
+    if ch == '☻':
+        return 'yellow'
     return 'white'

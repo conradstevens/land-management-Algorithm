@@ -1,4 +1,5 @@
 import math as math
+from Pice.Pice import Pice
 
 class Vision():
 
@@ -21,15 +22,27 @@ class Vision():
         circum = []
         for x in range(0, self.rad+1):
             ang = math.acos(x/self.rad)
-            y = round(math.sin(ang)*self.rad)
+            y = math.floor(math.sin(ang)*self.rad)
 
-            circum = addToListIfNotIn(circum, [x, y])
-            circum = addToListIfNotIn(circum, [-x, -y])
-            circum = addToListIfNotIn(circum, [-x, y])
-            circum = addToListIfNotIn(circum, [x, -y])
+            for yi in range(0, y+1):
+                addToListIfNotIn(self.visionCircle, [x, yi])
+                addToListIfNotIn(self.visionCircle, [-x, -yi])
+                addToListIfNotIn(self.visionCircle, [-x, yi])
+                addToListIfNotIn(self.visionCircle, [x, -yi])
 
-        self.visionCircle = circum
-        print(circum)
+    def getPiceVision(self, cx: int, cy: int, pice: Pice):
+        """
+        Returns the coordinates in vision from the pice
+        :return: List[Dict]
+        """
+        piceVision = []
+        for visionTile in self.visionCircle:
+            visionTileDic = {'x': visionTile[0] + cx,
+                             'y': visionTile[1] + cy,
+                             'v': pice.piceMatrix[cy + visionTile[1]][cx + visionTile[0]]}
+
+            piceVision.append(visionTileDic)
+        return piceVision
 
 
 def addToListIfNotIn(l: list, elm):

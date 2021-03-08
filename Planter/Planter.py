@@ -31,9 +31,17 @@ class Planter:
         self.pice.windw.drawChar('☻', self.x, self.y)  # Note does not update the pice
 
     def getView(self):
-        for i in self.vision.visionCircle:
-            self.pice.windw.drawChar('G', self.x + i[0], self.y + i[1], clr='red')
+        """
+        Gets the planters view
+        """
+        # Updates the plater view
+        # //todo Make a view tile a class
+        self.view = self.vision.getPiceVision(self.x, self.y, self.pice)
 
+        # Updates the plater view
+        for viewT in self.view:
+            if [viewT.get('x'), viewT.get('y')] != [self.x, self.y]:
+                self.pice.windw.drawChar(viewT.get('v'), viewT.get('x'), viewT.get('y'), clr='blue')
 
     def plantPice(self, algo):
         """

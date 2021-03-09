@@ -23,6 +23,7 @@ class Pice:
         Loads the pice matrix
         :return:
         """
+        self.piceMatrix = []
         self.windw = windw
         pice = open(filename, 'r')
 
@@ -31,7 +32,7 @@ class Pice:
         while line != '':
             self.height += 1
             charY += 1
-            rowWidth = 0
+            rowWidth = -1
             matrixLine = []
 
             for charX in range(0, len(line) - 1):
@@ -60,10 +61,10 @@ class Pice:
         :return: None
         """
         coordinates = self.findChar('C')
-        # self.updateTile('☻', coordinates[0], coordinates[1])
 
         # Assigns the planter Pice information
         planter.x, planter.y = coordinates[0], coordinates[1]
+        self.windw.drawChar('☻', planter.x, planter.y)
         planter.pice = self
 
     def findChar(self, char):

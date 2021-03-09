@@ -25,9 +25,12 @@ class Planter:
         """
         Moves the planter x+nx, y+ny
         """
+        print(self.pice.piceMatrix[self.y+1][self.x].char)
+        self.pice.windw.drawChar(self.pice.piceMatrix[self.y][self.x].char, self.x, self.y)
         self.x += nx
         self.y -= ny
         self.pice.windw.drawChar('☻', self.x, self.y)  # Note does not update the pice
+
 
     def getView(self):
         """

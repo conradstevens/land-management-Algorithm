@@ -36,9 +36,6 @@ class Windw:
         if clr is None:
             clr = getDrawColor(char)
 
-        if char == "O":
-            char = "•"
-
         labelBox = gr.Text(gr.Point((x + 1) * self.fontSizeX, (y + 1) * self.fontSizeY), '█')
         labelBox.setTextColor('black')
         labelBox.draw(self.win)

@@ -1,5 +1,5 @@
 from Pice.Window import Windw
-
+from Pice.Tile import Tile
 
 class Pice:
     """
@@ -9,7 +9,7 @@ class Pice:
     win = -1
     width = 0
     height = 0
-    piceMatrix = []
+    piceMatrix = [[Tile]]
     windw = Windw(-1, -1)
 
     def __str__(self):
@@ -27,14 +27,17 @@ class Pice:
         pice = open(filename, 'r')
 
         line = pice.readline()
+        charY = -1
         while line != '':
             self.height += 1
+            charY += 1
             rowWidth = 0
             matrixLine = []
 
-            for char in line[0: len(line) - 1]:
+            for charX in range(0, len(line) - 1):
                 rowWidth += 1
-                matrixLine.append(char)
+                tile = Tile(charX, charY, line[charX])
+                matrixLine.append(tile)
 
             self.piceMatrix.append(matrixLine)
             line = pice.readline()
@@ -47,14 +50,9 @@ class Pice:
        Draws the pice for the first time
        :return: None"""
         self.windw.drawWindw(self.width, self.height)
-        rCount = 0
-        cCount = 0
         for r in self.piceMatrix:
             for c in r:
-                self.windw.drawChar(c, cCount, rCount)
-                cCount += 1
-            cCount = 0
-            rCount += 1
+                self.windw.drawChar(c.char, c.x, c.y)
 
     def placePlaner(self, planter):
         """
@@ -62,11 +60,10 @@ class Pice:
         :return: None
         """
         coordinates = self.findChar('C')
-        self.updateTile('☻', coordinates[0], coordinates[1])
+        # self.updateTile('☻', coordinates[0], coordinates[1])
 
         # Assigns the planter Pice information
         planter.x, planter.y = coordinates[0], coordinates[1]
-        planter.underTile = 'C'
         planter.pice = self
 
     def findChar(self, char):
@@ -74,23 +71,15 @@ class Pice:
         Returns the coordinates of where the pice is
         :return: List
         """
-        rCount = 0
-        cCount = 0
         for r in self.piceMatrix:
             for c in r:
-                if c == char:
-                    return [cCount, rCount]
-                cCount += 1
-            cCount = 0
-            rCount += 1
+                if c.char == char:
+                    return [c.x, c.y]
 
     def updateTile(self, char: str, x: int, y: int, clr=None):
         """
         Updates the text of one element in teh pice
         :return: None
         """
-        if char is None or len(char) > 1:
-            print("Warning Char > 1")
-
-        self.piceMatrix[y][x] = char
+        self.piceMatrix[y][x].char = char
         self.windw.drawChar(char, x, y, clr)

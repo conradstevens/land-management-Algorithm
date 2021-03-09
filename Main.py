@@ -25,11 +25,12 @@ if __name__ == '__main__':
     pice = Pice()
     pice.loadPiceMatrix(windw, 'C:/Users/conra/Documents/land-management-Algorithm/Pice/Pices/Pice1.txt')
     pice.drawPice()
+    tm.sleep(1)
 
     planter = Planter(bagSize=100, viwDistance=4)
     pice.placePlaner(planter)
 
-    planter.move(0, 10)
+    planter.move(0, 10) # //Todo
     planter.getView()
 
     # planter.move(1, 5)

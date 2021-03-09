@@ -25,7 +25,6 @@ class Planter:
         """
         Moves the planter x+nx, y+ny
         """
-        self.pice.updateTile(self.underTile, self.x, self.y)
         self.x += nx
         self.y -= ny
         self.pice.windw.drawChar('☻', self.x, self.y)  # Note does not update the pice
@@ -41,7 +40,7 @@ class Planter:
         # Updates the plater view
         for viewT in self.view:
             if [viewT.get('x'), viewT.get('y')] != [self.x, self.y]:
-                self.pice.windw.drawChar(viewT.get('v'), viewT.get('x'), viewT.get('y'), clr='blue')
+                self.pice.windw.drawChar(viewT.get('v').char, viewT.get('x'), viewT.get('y'), clr='blue')
 
     def plantPice(self, algo):
         """

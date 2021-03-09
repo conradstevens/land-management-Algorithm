@@ -34,7 +34,6 @@ class Planter:
         Gets the planters view
         """
         # Updates the plater view
-        # //todo Make a view tile a class
         self.view = self.vision.getPiceVision(self.x, self.y, self.pice)
 
         # Updates the plater view

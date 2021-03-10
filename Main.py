@@ -18,7 +18,7 @@ algorithm in the next version of his book: 'Step by Step, a guide to tree planti
 from Pice.Pice import Pice
 from Pice.Window import Windw
 from Planter.Planter import Planter
-from Planter.Vision import Vision
+from ManualAlgo.Algo import Algo
 
 if __name__ == '__main__':
     windw = Windw(18, 21)
@@ -27,14 +27,16 @@ if __name__ == '__main__':
     pice.drawPice()
 
     planter = Planter(bagSize=100, viwDistance=4)
-
-    print(pice.piceMatrix[21][10].char)
-
-
     pice.placePlaner(planter)
-    tm.sleep(1)
+    algo = Algo(planter)
+    tm.sleep(0.10)
 
-    planter.move(0, 10)
-    planter.getView()
+    # Planting Loop
+    for i in range(0, 10):
+        tm.sleep(0.1)
+        move = algo.turn()
+        planter.move(move[0], move[1])
+
+
 
     tm.sleep(1)

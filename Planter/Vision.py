@@ -30,20 +30,6 @@ class Vision():
                 addToListIfNotIn(self.visionCircle, [-x, yi])
                 addToListIfNotIn(self.visionCircle, [x, -yi])
 
-    def getPiceVision(self, cx: int, cy: int, pice: Pice):
-        """
-        Returns the coordinates in vision from the pice
-        :return: List[Dict]
-        """
-        piceVision = []
-        for visionTile in self.visionCircle:
-            visionTileDic = {'x': visionTile[0] + cx,
-                             'y': visionTile[1] + cy,
-                             'v': pice.piceMatrix[cy + visionTile[1]][cx + visionTile[0]]}
-
-            piceVision.append(visionTileDic)
-        return piceVision
-
 
 def addToListIfNotIn(l: list, elm):
     """
@@ -54,6 +40,21 @@ def addToListIfNotIn(l: list, elm):
     return l
 
 
+    #  def getPiceVision(self, cx: int, cy: int, pice: Pice):
+    #      """
+    #      Returns the coordinates in vision from the pice
+    #      :return: List[Dict]
+    #      """
+    #      piceVision = []
+    #      for visionTile in self.visionCircle:
+    #          if (visionTile[0] + cx) < pice.width and (visionTile[1] + cx) < pice.height:
+    #
+    #              visionTileDic = {'x': visionTile[0] + cx,
+    #                               'y': visionTile[1] + cy,
+    #                               'v': pice.piceMatrix[cy + visionTile[1]][cx + visionTile[0]]}
+    #
+    #              piceVision.append(visionTileDic)
+    #      return piceVision
 
 
 

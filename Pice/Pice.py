@@ -53,7 +53,7 @@ class Pice:
         self.windw.drawWindw(self.width, self.height)
         for r in self.piceMatrix:
             for c in r:
-                self.windw.drawChar(c.char, c.x, c.y)
+                self.windw.drawChar(c.char, c.x, c.y, clr='blue')
 
     def placePlaner(self, planter):
         """
@@ -66,6 +66,7 @@ class Pice:
         planter.x, planter.y = coordinates[0], coordinates[1]
         self.windw.drawChar('☻', planter.x, planter.y)
         planter.pice = self
+        planter.getView()
 
     def findChar(self, char):
         """

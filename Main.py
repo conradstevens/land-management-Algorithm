@@ -26,17 +26,19 @@ if __name__ == '__main__':
     pice.loadPiceMatrix(windw, 'C:/Users/conra/Documents/land-management-Algorithm/Pice/Pices/Pice1.txt')
     pice.drawPice()
 
-    planter = Planter(bagSize=100, viwDistance=4)
+    planter = Planter(bagSize=400, viwDistance=4)
     pice.placePlaner(planter)
     algo = Algo(planter)
     tm.sleep(0.10)
 
     # Planting Loop
-    for i in range(0, 10):
-        tm.sleep(0.1)
+    while planter.finished is False:
+        tm.sleep(0.0)
+        print(planter.bagCount)
+
         move = algo.turn()
         planter.move(move[0], move[1])
-
+        planter.plant()
 
 
     tm.sleep(1)

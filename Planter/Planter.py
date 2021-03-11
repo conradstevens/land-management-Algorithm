@@ -33,9 +33,10 @@ class Planter:
         self.markDead()
         self.bagUp()
         self.getView()
-        # At End for smoothest animation transition
-        self.pice.windw.drawChar(self.pice.piceMatrix[self.y - ny][self.x - nx].char, self.x, self.y)
+
         self.pice.windw.drawChar('☻', self.x, self.y)  # Note does not update the pice
+        # At End for smoothest animation transition
+        self.pice.windw.drawChar(self.pice.piceMatrix[self.y - ny][self.x - nx].char, self.x - nx, self.y - ny)
 
 
     def getView(self):
@@ -45,10 +46,14 @@ class Planter:
         # Updates the plater view
         for v in self.vision.visionCircle:
             vx, vy = v[0] + self.x, v[1] + self.y
-            if not (vx == self.x and vy == self.y)and (self.pice.height > vy >= 0) and (len(self.pice.piceMatrix[vy]) > vx >= 0):
+            if not (vx == self.x and vy == self.y) and \
+                    (self.pice.height > vy >= 0) and \
+                    (len(self.pice.piceMatrix[vy]) > vx >= 0):
+
                 visionTile = self.getTile(vx, vy)
-                visionTile.isSeen = True
-                self.pice.windw.drawChar(visionTile.char, vx, vy)
+                if not visionTile.isSeen:
+                    self.pice.windw.drawChar(visionTile.char, vx, vy)
+                    visionTile.isSeen = True
 
     def plant(self):
         """

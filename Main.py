@@ -33,7 +33,7 @@ if __name__ == '__main__':
 
     # Planting Loop
     while planter.finished is False:
-        tm.sleep(0.0)
+        tm.sleep(0.05)
         print(planter.bagCount)
 
         move = algo.turn()

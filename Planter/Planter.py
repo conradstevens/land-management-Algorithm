@@ -20,16 +20,18 @@ class Planter:
         """
         Moves the planter x+nx, y+ny
         """
+        isDead = self.getDead()
+
         self.x += nx
         self.y += ny
 
-        self.markDead()
         self.bagUp()
         self.getView()
 
         self.pice.windw.drawChar('☻', self.x, self.y)  # Note does not update the pice
         # At End for smoothest animation transition
-        self.pice.windw.drawChar(self.pice.piceMatrix[self.y - ny][self.x - nx].char, self.x - nx, self.y - ny)
+
+        self.pice.windw.drawChar(self.pice.piceMatrix[self.y - ny][self.x - nx].char, self.x - nx, self.y - ny, isDead)
 
     def getView(self):
         """
@@ -51,10 +53,13 @@ class Planter:
         """
         Plants a tree in the space you are under
         """
-        if self.pice.piceMatrix[self.y][self.x].char == '.':
+        if self.pice.piceMatrix[self.y][self.x].isPlantable:
             self.bagCount -= 1
             self.pice.piceMatrix[self.y][self.x].char = 'T'
             self.pice.piceMatrix[self.y][self.x].isPlantable = False
+        else:
+            self.pice.piceMatrix[self.y][self.x].dead = True
+
 
     def bagUp(self):
         """
@@ -88,10 +93,11 @@ class Planter:
         """
         return self.pice.piceMatrix[ny][nx]
 
-    def markDead(self):
+    def getDead(self):
         """
-        Marks move as a deadwalk
+        Determines if move was a dead walk
         """
-        underChar = self.getUderTile().char
-        if self.bagCount < 1 and underChar != 'C':
-            self.pice.windw.drawChar(underChar, self.x, self.y, 'red')
+        if self.pice.piceMatrix[self.y][self.x].dead:
+            return 'red'
+        return None
+

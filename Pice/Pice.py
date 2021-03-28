@@ -9,7 +9,7 @@ class Pice:
     def __init__(self, fileName: str):
         self.piceMatrix = []
         self.width, self.height = self.loadPiceMatrix(fileName)
-        self.windw = Windw(self.width, self.height)
+        self.windw = Windw(20, 20)
 
     def __str__(self):
         for row in self.piceMatrix:
@@ -86,11 +86,9 @@ class Pice:
 
 
 class Tile:
-    x, y, = -1, -1
-
-    char = 'N'
     isSeen = False
     isPlantable = False
+    dead = False
 
     def __init__(self, x, y, char):
         self.x, self.y, = x, y

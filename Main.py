@@ -9,7 +9,7 @@ Additionaly fuel can be added so the character can only take a finite number of 
 start location for fule.
 
 Here is a link to a video titled “Land Management Algorithm” of the algorithm in action:
-https://www.youtube.com/watch?v=vGFUHFJXjKI
+https://www.youtube.com/watch?v=vGFUHFJXjKI b
 
 Jonathan scooter Clark, an leading member of the reforestiation community has spoken with me about mentioning the
 algorithm in the next version of his book: 'Step by Step, a guide to tree planting for beginners'.
@@ -19,7 +19,6 @@ from Pice.Pice import Pice
 from Pice.Window import Windw
 from Planter.Planter import Planter
 from ManualAlgo.Algo import Algo
-from AI.AiMain import AiMain
 
 
 def runManualAlgo(fileNamem: str, bagSize: int, viewDistance: int, stepTime: float):
@@ -66,7 +65,6 @@ def runAI():
     fileName = 'C:/Users/conra/Documents/land-management-Algorithm/Pice/Pices/Pice1.txt'
     bagSize = 400
     viewDistance = 4
-    AiMain(fileName, bagSize, viewDistance)
 
 
 if __name__ == '__main__':

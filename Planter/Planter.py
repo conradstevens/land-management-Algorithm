@@ -29,8 +29,6 @@ class Planter:
         self.getView()
 
         self.pice.windw.drawChar('☻', self.x, self.y)  # Note does not update the pice
-        # At End for smoothest animation transition
-
         self.pice.windw.drawChar(self.pice.piceMatrix[self.y - ny][self.x - nx].char, self.x - nx, self.y - ny, isDead)
 
     def getView(self):
@@ -46,7 +44,7 @@ class Planter:
 
                 visionTile = self.getTile(vx, vy)
                 if not visionTile.isSeen:
-                    self.pice.windw.drawChar(visionTile.char, vx, vy)
+                    self.pice.drawChar(visionTile.char, vx, vy)
                     visionTile.isSeen = True
 
     def plant(self):

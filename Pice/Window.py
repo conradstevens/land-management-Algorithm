@@ -6,10 +6,6 @@ class Windw:
     """
     Draws and updates the pice window/screen
     """
-    fontSizeX = -1
-    fontSizeY = -1
-    win = None
-
     def __init__(self, fontSizeX, fontSizeY):
         self.fontSizeX = fontSizeX
         self.fontSizeY = fontSizeY
@@ -34,7 +30,7 @@ class Windw:
         :return:None
         """
         if clr is None:
-            clr = getDrawColor(char)
+            clr = self._getDrawColor(char)
 
         labelBox = gr.Text(gr.Point((x + 1) * self.fontSizeX, (y + 1) * self.fontSizeY), '█')
         labelBox.setTextColor('black')
@@ -44,21 +40,20 @@ class Windw:
         labelBox.setTextColor(clr)
         labelBox.draw(self.win)
 
-
-def getDrawColor(ch: str):
-    """
-    Gets the color of the string that is to be drawn
-    :param ch:
-    :return: str
-    """
-    if ch == 'T':
-        return 'green2'
-    if ch == 'D':
-        return 'red'
-    if ch == 'C':
-        return 'pink3'
-    if ch == '?':
-        return 'yellow'
-    if ch == '☻':
-        return 'yellow'
-    return 'white'
+    def _getDrawColor(self, ch: str):
+        """
+        Gets the color of the string that is to be drawn
+        :param ch:
+        :return: str
+        """
+        if ch == 'T':
+            return 'green2'
+        if ch == 'D':
+            return 'red'
+        if ch == 'C':
+            return 'pink3'
+        if ch == '?':
+            return 'yellow'
+        if ch == '☻':
+            return 'yellow'
+        return 'white'

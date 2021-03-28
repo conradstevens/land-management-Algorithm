@@ -1,16 +1,15 @@
 from Pice.Window import Windw
-from Pice.Tile import Tile
+
 
 class Pice:
     """
     Keeps track of what is in the pice and updates and draws the pice
     """
-    name = -1
-    win = -1
-    width = 0
-    height = 0
-    piceMatrix = [[Tile]]
-    windw = Windw(-1, -1)
+
+    def __init__(self, fileName: str):
+        self.piceMatrix = []
+        self.width, self.height = self.loadPiceMatrix(fileName)
+        self.windw = Windw(self.width, self.height)
 
     def __str__(self):
         for row in self.piceMatrix:
@@ -18,19 +17,17 @@ class Pice:
                 print(char, end='')
             print('')
 
-    def loadPiceMatrix(self, windw: Windw, filename: str):
+    def loadPiceMatrix(self, filename: str):
         """
         Loads the pice matrix
-        :return:
         """
-        self.piceMatrix = []
-        self.windw = windw
         pice = open(filename, 'r')
-
         line = pice.readline()
         charY = -1
+        height, width = 0, 0
+
         while line != '':
-            self.height += 1
+            height += 1
             charY += 1
             rowWidth = -1
             matrixLine = []
@@ -43,8 +40,9 @@ class Pice:
             self.piceMatrix.append(matrixLine)
             line = pice.readline()
 
-            if self.width < rowWidth:
-                self.width = rowWidth
+            if width < rowWidth:
+                width = rowWidth
+        return width, height
 
     def drawPice(self):
         """
@@ -85,3 +83,18 @@ class Pice:
         """
         self.piceMatrix[y][x].char = char
         self.windw.drawChar(char, x, y, clr)
+
+
+class Tile:
+    x, y, = -1, -1
+
+    char = 'N'
+    isSeen = False
+    isPlantable = False
+
+    def __init__(self, x, y, char):
+        self.x, self.y, = x, y
+        self.char = char
+
+        if char == '.':
+            self.isPlantable = True

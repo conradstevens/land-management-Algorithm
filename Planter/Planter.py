@@ -1,27 +1,20 @@
 """
 Planter that moves and makes decisions in the land
 """
-from Pice.Pice import Pice
+import Pice
 from Planter.Vision import Vision
-from Pice.Tile import Tile
+
 
 class Planter:
-    pice = Pice()
-    bagSize = -1
-    bagCount = -1
-    underTile = '-1'
-    piceMemory = []
-    x, y, = -1, -1
-    finished = False
-    vision = Vision(1)
-    piceDone = False
-
-    def __init__(self, bagSize: int, viwDistance: int):
+    def __init__(self, bagSize: int, viwDistance: int, pice: Pice):
         """
         Planter must be assigned a pice. this is done in the pice class
         """
-        self.bagSize, self.bagCount = bagSize, bagSize
         self.vision = Vision(viwDistance)
+        self.pice = pice
+        self.bagSize, self.bagCount = bagSize, bagSize
+        self.x, self.y = 0, 0
+        self.finished = False
 
     def move(self, nx: int, ny: int):
         """
@@ -38,12 +31,11 @@ class Planter:
         # At End for smoothest animation transition
         self.pice.windw.drawChar(self.pice.piceMatrix[self.y - ny][self.x - nx].char, self.x - nx, self.y - ny)
 
-
     def getView(self):
         """
         Gets the planters view
         """
-        # Updates the plater view
+        # Updates the planter view
         for v in self.vision.visionCircle:
             vx, vy = v[0] + self.x, v[1] + self.y
             if not (vx == self.x and vy == self.y) and \
@@ -102,4 +94,4 @@ class Planter:
         """
         underChar = self.getUderTile().char
         if self.bagCount < 1 and underChar != 'C':
-             self.pice.windw.drawChar(underChar, self.x, self.y, 'red')
+            self.pice.windw.drawChar(underChar, self.x, self.y, 'red')

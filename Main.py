@@ -19,20 +19,20 @@ from Pice.Pice import Pice
 from Pice.Window import Windw
 from Planter.Planter import Planter
 from ManualAlgo.Algo import Algo
+from AI.AiMain import AiMain
 
-def runManualAlgo(windowX: int, windowY: int, fileNamem: str, bagSize: int, viewDistance: int, stepTime: float):
+
+def runManualAlgo(fileNamem: str, bagSize: int, viewDistance: int, stepTime: float):
     """
     Runs the planter Algorithm.
     This is a pretty lazzy algorithm that barley works. It is mostly for testing.
     """
     # Upload Pice
-    windw = Windw(windowX, windowY)
-    pice = Pice()
-    pice.loadPiceMatrix(windw, fileNamem)
+    pice = Pice(fileNamem)
     pice.drawPice()
 
     # Set Planter Perameters
-    planter = Planter(bagSize=bagSize, viwDistance=viewDistance)
+    planter = Planter(bagSize=bagSize, viwDistance=viewDistance, pice=pice)
     pice.placePlaner(planter)
     algo = Algo(planter)
     tm.sleep(0.10)
@@ -44,21 +44,29 @@ def runManualAlgo(windowX: int, windowY: int, fileNamem: str, bagSize: int, view
         planter.move(move[0], move[1])
         planter.plant()
 
-    tm.sleep(1)
-
 
 def runSampleManualAlgo():
     """
     A Sample test of the algorithm
     :return:
     """
-    windowX, windowY = 18, 21
     fileName = 'C:/Users/conra/Documents/land-management-Algorithm/Pice/Pices/Pice1.txt'
     bagSize = 400
     viewDistance = 4
     stepTime = 0.01
 
-    runManualAlgo(windowX, windowY, fileName, bagSize, viewDistance, stepTime)
+    runManualAlgo(fileName, bagSize, viewDistance, stepTime)
+
+
+def runAI():
+    """
+    Runs the AI ***** More Detail Later
+    :return:
+    """
+    fileName = 'C:/Users/conra/Documents/land-management-Algorithm/Pice/Pices/Pice1.txt'
+    bagSize = 400
+    viewDistance = 4
+    AiMain(fileName, bagSize, viewDistance)
 
 
 if __name__ == '__main__':

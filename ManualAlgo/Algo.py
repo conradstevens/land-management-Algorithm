@@ -5,8 +5,6 @@ from Planter.Planter import Planter
 from Pice.Pice import Pice
 
 class Algo:
-    planter = Planter(-1, -1)
-
     def __init__(self, planter: Planter):
         self.planter = planter
 

@@ -1,20 +1,21 @@
 """
-Planter that moves and makes decisions in the land
+PlanterClasses that moves and makes decisions in the land
 """
-import Pice
-from Planter.Vision import Vision
+import PiceClasses
+from PlanterClasses.Vision import Vision
 
 
 class Planter:
-    def __init__(self, bagSize: int, viwDistance: int, pice: Pice):
+    def __init__(self, bagSize: int, viwDistance: int, pice: PiceClasses):
         """
-        Planter must be assigned a pice. this is done in the pice class
+        PlanterClasses must be assigned a pice. this is done in the pice class
         """
         self.vision = Vision(viwDistance)
         self.pice = pice
         self.bagSize, self.bagCount = bagSize, bagSize
         self.x, self.y = 0, 0
         self.finished = False
+        self.noWalk = 0
 
     def move(self, nx: int, ny: int):
         """
@@ -22,14 +23,21 @@ class Planter:
         """
         isDead = self.getDead()
 
-        self.x += nx
-        self.y += ny
+        if self.pice.piceMatrix[self.y + ny][self.x + nx].isWalkable:
+            self.x += nx
+            self.y += ny
 
-        self.bagUp()
-        self.getView()
+            self.bagUp()
+            self.getView()
 
-        self.pice.windw.drawChar('☻', self.x, self.y)  # Note does not update the pice
-        self.pice.windw.drawChar(self.pice.piceMatrix[self.y - ny][self.x - nx].char, self.x - nx, self.y - ny, isDead)
+            self.pice.drawChar('☻', self.x, self.y)  # Note does not update the pice
+            self.pice.drawChar(self.pice.piceMatrix[self.y - ny][self.x - nx].char, self.x - nx, self.y - ny, isDead)
+            self.noWalk = 0
+
+        self.noWalk += 1
+        if self.noWalk > 5:
+            self.finished = True
+
 
     def getView(self):
         """
@@ -55,13 +63,14 @@ class Planter:
             self.bagCount -= 1
             self.pice.piceMatrix[self.y][self.x].char = 'T'
             self.pice.piceMatrix[self.y][self.x].isPlantable = False
-        else:
-            self.pice.piceMatrix[self.y][self.x].dead = True
+            self.pice.piceMatrix[self.y][self.x].isPlanted = True
 
+        else:
+            self.pice.piceMatrix[self.y][self.x].isDead = True
 
     def bagUp(self):
         """
-        Planter fills up their bags if at the cash
+        PlanterClasses fills up their bags if at the cash
         """
         if self.getUderTile().char == 'C':
             self.bagCount = self.bagSize
@@ -95,7 +104,7 @@ class Planter:
         """
         Determines if move was a dead walk
         """
-        if self.pice.piceMatrix[self.y][self.x].dead:
+        if self.pice.piceMatrix[self.y][self.x].isDead:
             return 'red'
         return None
 

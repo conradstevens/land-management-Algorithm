@@ -21,7 +21,7 @@ class PICE:
         # Pice Data
         self.data = []
 
-        # Planter Data
+        # PlanterClasses Data
         self.trees_planted = 0
         self.bag_size = BAG_SIZE
         self.trees_baged = 0
@@ -262,7 +262,7 @@ class PICE:
                 self.planter_here(self.x, self.y - 1) != 'T':
             return False  # Does not have to deadwalk
 
-        return True  # Planter IS STUCK!
+        return True  # PlanterClasses IS STUCK!
 
     def clear_num(self, windw):
         """
@@ -503,7 +503,7 @@ def drawpice(win, pice):
         c = 0
         for space in line:
 
-# Create Planter ---------------------------------------------------------------
+# Create PlanterClasses ---------------------------------------------------------------
 [pice.x, pice.y] = [pice.find_char('C')[0], pice.find_char('C')[1]]
 cash_locati = [pice.x, pice.y]
 

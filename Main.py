@@ -32,7 +32,7 @@ def runManualAlgo(fileName: str, bagSize: int, viewDistance: int, stepTime: floa
     # pice = Pice(fileName)
 
     # Set PlanterClasses Parameters
-    planter = PlanterMain(bagSize=bagSize, viwDistance=viewDistance, pice=pice)
+    planter = Planter(bagSize=bagSize, viwDistance=viewDistance, pice=pice)
     pice.placePlaner(planter)
     algo = Algo(planter)
 
@@ -42,7 +42,7 @@ def runManualAlgo(fileName: str, bagSize: int, viewDistance: int, stepTime: floa
         move = algo.turn()
         planter.move(move[0], move[1])
         planter.plant()
-        tm.sleep(0.1)
+        tm.sleep(1)
 
 
 def runSampleManualAlgo():

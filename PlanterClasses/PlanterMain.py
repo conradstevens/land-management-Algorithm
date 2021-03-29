@@ -1,12 +1,12 @@
 """
 PlanterClasses that moves and makes decisions in the land
 """
-import PiceClasses
+from PiceClasses.Pice import Pice
 from PlanterClasses.Vision import Vision
 
 
 class Planter:
-    def __init__(self, bagSize: int, viwDistance: int, pice: PiceClasses):
+    def __init__(self, bagSize: int, viwDistance: int, pice: Pice):
         """
         PlanterClasses must be assigned a pice. this is done in the pice class
         """
@@ -33,10 +33,10 @@ class Planter:
             self.pice.drawChar('☻', self.x, self.y)  # Note does not update the pice
             self.pice.drawChar(self.pice.piceMatrix[self.y - ny][self.x - nx].char, self.x - nx, self.y - ny, isDead)
             self.noWalk = 0
-
-        self.noWalk += 1
-        if self.noWalk > 5:
-            self.finished = True
+        else:
+            self.noWalk += 1
+            if self.noWalk > 5:
+                self.finished = True
 
 
     def getView(self):
@@ -108,3 +108,14 @@ class Planter:
             return 'red'
         return None
 
+
+class PlanterAI(Planter):
+    """
+    Planter with additional AI features
+    """
+
+    def __init__(self, bagSize: int, viwDistance: int, pice: Pice):
+        super().__init__(bagSize, viwDistance, pice)
+
+    def move(self, nx: int, ny: int):
+        super(PlanterAI, self).move(nx, ny)

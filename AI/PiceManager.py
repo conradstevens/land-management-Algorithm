@@ -13,5 +13,6 @@ def getEmptyTiles(p: Pice):
     emptyCount = 0
     for r in p.piceMatrix:
         for t in r:
-            if not t.isPlanted:
+            if t.isPlantable and not t.isPlanted:
                 emptyCount += 1
+    return emptyCount

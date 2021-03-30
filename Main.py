@@ -41,7 +41,6 @@ def runManualAlgo(fileName: str, bagSize: int, viewDistance: int, stepTime: floa
         planter.move(move[0], move[1], True)
         tm.sleep(1)
 
-
 def runSampleManualAlgo():
     """
     A Sample test of the algorithm

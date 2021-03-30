@@ -26,22 +26,19 @@ def runManualAlgo(fileName: str, bagSize: int, viewDistance: int, stepTime: floa
     This is a pretty lazzy algorithm that barley works. It is mostly for testing.
     """
     # Upload Pice
-    pice = PiceWind(fileName, 20)
-    pice.drawPice()
-
-    # pice = Pice(fileName)
+    pice = PiceWind(fileName, 20)   # Comment for no window run
+    pice.drawPice()                 # Comment for no window run
+    # pice = Pice(fileName)         # Comment for WINDOW run
 
     # Set PlanterClasses Parameters
     planter = Planter(bagSize=bagSize, viwDistance=viewDistance, pice=pice)
-    pice.placePlaner(planter)
     algo = Algo(planter)
 
     # Planting Loop
     while planter.finished is False:
         tm.sleep(stepTime)
         move = algo.turn()
-        planter.move(move[0], move[1])
-        planter.plant()
+        planter.move(move[0], move[1], True)
         tm.sleep(1)
 
 

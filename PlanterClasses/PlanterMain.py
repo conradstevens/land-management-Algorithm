@@ -2,6 +2,7 @@
 PlanterClasses that moves and makes decisions in the land
 """
 from PiceClasses.Pice import Pice
+from PiceClasses.Pice import Tile
 from PlanterClasses.Vision import Vision
 
 
@@ -14,10 +15,14 @@ class Planter:
         self.pice = pice
         self.bagSize, self.bagCount = bagSize, bagSize
         self.x, self.y = 0, 0
-        self.finished = False
         self.noWalk = 0
 
-    def move(self, nx: int, ny: int):
+        self.finished = False
+        self.deadCount = 0
+
+        self.placePlanter()
+
+    def move(self, nx: int, ny: int, plant: bool):
         """
         Moves the planter x+nx, y+ny
         """
@@ -31,13 +36,18 @@ class Planter:
             self.getView()
 
             self.pice.drawChar('☻', self.x, self.y)  # Note does not update the pice
-            self.pice.drawChar(self.pice.piceMatrix[self.y - ny][self.x - nx].char, self.x - nx, self.y - ny, isDead)
+            self.pice.drawChar(self.getTile(-nx, -ny, selfRelative=True).char, self.x - nx, self.y - ny, isDead)
             self.noWalk = 0
         else:
             self.noWalk += 1
             if self.noWalk > 5:
                 self.finished = True
 
+        if plant:
+            self.plant()
+        else:
+            self.getUderTile().isDead = True
+            self.deadCount += 1
 
     def getView(self):
         """
@@ -59,14 +69,23 @@ class Planter:
         """
         Plants a tree in the space you are under
         """
-        if self.pice.piceMatrix[self.y][self.x].isPlantable:
+        if self.getUderTile().isPlantable and self.bagCount > 0:
             self.bagCount -= 1
-            self.pice.piceMatrix[self.y][self.x].char = 'T'
-            self.pice.piceMatrix[self.y][self.x].isPlantable = False
-            self.pice.piceMatrix[self.y][self.x].isPlanted = True
+            self.getUderTile().char = 'T'
+            self.getUderTile().isPlantable = False
+            self.getUderTile().isPlanted = True
 
         else:
-            self.pice.piceMatrix[self.y][self.x].isDead = True
+            self.getUderTile().isDead = True
+
+    def placePlanter(self):
+        """
+        Places the planter at the cash of the pice
+        """
+        x, y = self.pice.findChar('C')
+        self.x, self.y = x, y
+        self.pice.drawChar('☻', x, y)
+        self.getView()
 
     def bagUp(self):
         """
@@ -79,7 +98,7 @@ class Planter:
         """
         Get's the tile the planter is on
         :return:
-        :rtype:
+        :rtype: Tile
         """
         return self.pice.piceMatrix[self.y][self.x]
 
@@ -93,11 +112,13 @@ class Planter:
             return visionTile
         return None
 
-    def getTile(self, nx, ny):
+    def getTile(self, nx, ny, selfRelative=False):
         """
         Returns the tile under self + x + y
         :rtype Tile
         """
+        if selfRelative:
+            return self.getTile(self.x + nx, self.y + ny, selfRelative=False)
         return self.pice.piceMatrix[ny][nx]
 
     def getDead(self):
@@ -105,17 +126,7 @@ class Planter:
         Determines if move was a dead walk
         """
         if self.pice.piceMatrix[self.y][self.x].isDead:
+            self.deadCount += 1
             return 'red'
         return None
 
-
-class PlanterAI(Planter):
-    """
-    Planter with additional AI features
-    """
-
-    def __init__(self, bagSize: int, viwDistance: int, pice: Pice):
-        super().__init__(bagSize, viwDistance, pice)
-
-    def move(self, nx: int, ny: int):
-        super(PlanterAI, self).move(nx, ny)

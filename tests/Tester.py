@@ -1,5 +1,5 @@
 from PlanterClasses.PlanterMain import Planter
-from AI.PiceManager import *
+from tests.PiceManager import *
 import unittest
 
 
@@ -9,7 +9,7 @@ def getBasic_Pice_and_Planter():
     :rtype Pice
     """
     pice = Pice(fileName='C:/Users/conra/Documents/land-management-Algorithm/PiceClasses/Pices/Pice1.txt')
-    planter = Planter(bagSize=400, viwDistance=1, pice=pice)
+    planter = Planter(bagSize=400, viwDistance=2, pice=pice)
     return pice, planter
 
 

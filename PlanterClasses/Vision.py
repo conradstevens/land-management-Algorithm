@@ -2,7 +2,7 @@ import math as math
 
 
 class Vision:
-    visionCircle = []
+    visionCircle = []  # Filled circle
 
     def __init__(self, rad):
         """
@@ -15,6 +15,8 @@ class Vision:
         """
         sets the vision circle around a point [0, 0]
         It can later be transposed on to any location in the pice
+
+        Note: no mater the size of a vision circle. The variables are displayed in the same order.
         """
         for x in range(0, self.rad + 1):
             ang = math.acos(x / self.rad)

@@ -55,15 +55,18 @@ class Planter:
         """
         # Updates the planter view
         for v in self.vision.visionCircle:
-            vx, vy = v[0] + self.x, v[1] + self.y
-            if not (vx == self.x and vy == self.y) and \
-                    (self.pice.height > vy >= 0) and \
-                    (len(self.pice.piceMatrix[vy]) > vx >= 0):
+            vx, vy = v[0], v[1]
+            tile = self.getTile(nx=vx, ny=vy, selfRelative=True)
 
-                visionTile = self.getTile(vx, vy)
-                if not visionTile.isSeen:
-                    self.pice.drawChar(visionTile.char, vx, vy)
-                    visionTile.isSeen = True
+            #  vx, vy = v[0] + self.x, v[1] + self.y
+            #  if not (vx == self.x and vy == self.y) and \
+            #          (self.pice.height > vy >= 0) and \
+            #          (len(self.pice.piceMatrix[vy]) > vx >= 0):
+            # visionTile = self.getTile(vx, vy)
+
+            if tile is not None and not tile.isSeen:
+                self.pice.drawChar(tile.char, vx, vy)
+                tile.isSeen = True
 
     def plant(self):
         """
@@ -119,7 +122,11 @@ class Planter:
         """
         if selfRelative:
             return self.getTile(self.x + nx, self.y + ny, selfRelative=False)
-        return self.pice.piceMatrix[ny][nx]
+
+        try:
+            return self.pice.piceMatrix[ny][nx]
+        except IndexError:
+            return None
 
     def getDead(self):
         """
@@ -129,4 +136,3 @@ class Planter:
             self.deadCount += 1
             return 'red'
         return None
-

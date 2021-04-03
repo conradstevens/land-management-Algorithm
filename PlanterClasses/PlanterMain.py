@@ -29,11 +29,9 @@ class Planter:
         isDead = self.getDead()
 
         if self.pice.piceMatrix[self.y + ny][self.x + nx].isWalkable:
-            self.x += nx
-            self.y += ny
 
+            self._updateMoveAndView(nx, ny)
             self.bagUp()
-            self.getView()
 
             self.pice.drawChar('☻', self.x, self.y)  # Note does not update the pice
             self.pice.drawChar(self.getTile(-nx, -ny, selfRelative=True).char, self.x - nx, self.y - ny, isDead)
@@ -49,12 +47,32 @@ class Planter:
             self.getUderTile().isDead = True
             self.deadCount += 1
 
+    def _updateMoveAndView(self, nx, ny, rememberAllView=False):
+        """
+        moves self and updates the view
+        """
+        if rememberAllView:
+            self.x, self.y = nx + self.x, ny + self.y
+            self.getView()
+
+        else: # rememberAllView = False
+            oldView = self._getViewList()
+            self.x, self.y = nx + self.x, ny + self.y
+            self.getView()
+            newView = self._getViewList()
+            nolongerSeen = [item for item in oldView if item not in newView]
+
+            for t in nolongerSeen:
+                tile = self.getTile(t[0], t[1], selfRelative=False)
+                if not tile is None:
+                    tile.isSeen = False
+                    self.pice.drawChar(tile.char, t[0], t[1], 'blue')
+
     def getView(self):
         """
         Gets the planters view
         """
         # Updates the planter view
-        oldView = self.vision.visionCircle.copy()
         for v in self.vision.visionCircle:
             vx, vy = v[0], v[1]
             tile = self.getTile(nx=vx, ny=vy, selfRelative=True)
@@ -83,7 +101,6 @@ class Planter:
         x, y = self.pice.findChar('C')
         self.x, self.y = x, y
         self.pice.drawChar('☻', x, y)
-        self.getView()
 
     def bagUp(self):
         """
@@ -117,7 +134,6 @@ class Planter:
         """
         if selfRelative:
             return self.getTile(self.x + nx, self.y + ny, selfRelative=False)
-
         try:
             return self.pice.piceMatrix[ny][nx]
         except IndexError:
@@ -131,3 +147,13 @@ class Planter:
             self.deadCount += 1
             return 'red'
         return None
+
+    def _getViewList(self):
+        """
+        :return: list of coordinates in view
+        """''
+        myVision = self.vision.visionCircle.copy()
+        for i in range(0, len(myVision)):
+            t = myVision[i]
+            myVision[i] = [t[0] + self.x, t[1] + self.y]
+        return myVision

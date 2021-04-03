@@ -27,8 +27,8 @@ class MasterAI:
         """
         runs through the pice with the current model
         """
-        for i in range(1, 100):
-            time.sleep(0.1)
+        for i in range(1, 200):
+            time.sleep(0.05)
             self.piceRunner.playPice(self.curModel, self.chanceofRandMove())
 
     def chanceofRandMove(self):
@@ -38,7 +38,7 @@ class MasterAI:
 if __name__ == '__main__':
     # pice, planter = getBasic_Pice_and_Planter()
     pice = PiceClasses.Pice.PiceWind('C:/Users/conra/Documents/land-management-Algorithm/PiceClasses/Pices/Pice1.txt', 12)
-    planter = Planter(400, 2, pice)
+    planter = Planter(400, 3, pice)
 
 
     agent = Agent(planter)

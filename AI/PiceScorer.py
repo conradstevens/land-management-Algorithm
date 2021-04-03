@@ -19,3 +19,4 @@ class PiceScore:
         :return: score of the pice
         """
         self.score = -self.planter.deadCount
+

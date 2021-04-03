@@ -27,7 +27,7 @@ def runManualAlgo(fileName: str, bagSize: int, viewDistance: int, stepTime: floa
     """
     # Upload Pice
     pice = PiceWind(fileName, 20)   # Comment for no window run
-    pice.drawPice()                 # Comment for no window run
+    # pice.drawPice()                 # Comment for no window run
     # pice = Pice(fileName)         # Comment for WINDOW run
 
     # Set PlanterClasses Parameters
@@ -36,10 +36,9 @@ def runManualAlgo(fileName: str, bagSize: int, viewDistance: int, stepTime: floa
 
     # Planting Loop
     while planter.finished is False:
-        tm.sleep(stepTime)
         move = algo.turn()
         planter.move(move[0], move[1], True)
-        tm.sleep(1)
+        tm.sleep(stepTime)
 
 def runSampleManualAlgo():
     """
@@ -49,7 +48,7 @@ def runSampleManualAlgo():
     fileName = 'C:/Users/conra/Documents/land-management-Algorithm/PiceClasses/Pices/Pice1.txt'
     bagSize = 400
     viewDistance = 4
-    stepTime = 0.01
+    stepTime = 0.5
 
     runManualAlgo(fileName, bagSize, viewDistance, stepTime)
 

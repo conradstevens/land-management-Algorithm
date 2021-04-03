@@ -54,18 +54,13 @@ class Planter:
         Gets the planters view
         """
         # Updates the planter view
+        oldView = self.vision.visionCircle.copy()
         for v in self.vision.visionCircle:
             vx, vy = v[0], v[1]
             tile = self.getTile(nx=vx, ny=vy, selfRelative=True)
 
-            #  vx, vy = v[0] + self.x, v[1] + self.y
-            #  if not (vx == self.x and vy == self.y) and \
-            #          (self.pice.height > vy >= 0) and \
-            #          (len(self.pice.piceMatrix[vy]) > vx >= 0):
-            # visionTile = self.getTile(vx, vy)
-
-            if tile is not None and not tile.isSeen:
-                self.pice.drawChar(tile.char, vx, vy)
+            if tile is not None and not tile.isSeen and not(vx == 0 and vy == 0):
+                self.pice.drawChar(tile.char, vx + self.x, vy + self.y)
                 tile.isSeen = True
 
     def plant(self):

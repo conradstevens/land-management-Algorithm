@@ -70,23 +70,23 @@ class PiceWind(Pice):
     """
     def __init__(self, fileName: str, font: float):
         super().__init__(fileName)
-        self.windw = Windw(fontSizeX=20, fontSizeY=20)
+        self.window = Windw(fontSizeX=20, fontSizeY=20, width=self.width, height=self.height)
         self.drawPice()
 
     def drawPice(self):
         """
        Draws the pice for the first time
        :return: None"""
-        self.windw.drawWindw(self.width, self.height)
+        self.window.drawWindw(self.width, self.height)
         for r in self.piceMatrix:
             for c in r:
-                self.windw.drawChar(c.char, c.x, c.y, clr='blue')
+                self.window.drawChar(c.char, c.x, c.y, clr='blue')
 
     def drawChar(self, char, x, y, clr=None):
         """
         Draws the character in the window
         """
-        self.windw.drawChar(char, x, y, clr=clr)
+        self.window.drawChar(char, x, y, clr=clr)
 
 
 class Tile:

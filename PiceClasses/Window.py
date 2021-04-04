@@ -6,10 +6,11 @@ class Windw:
     """
     Draws and updates the pice window/screen
     """
-    def __init__(self, fontSizeX, fontSizeY):
-        self.fontSizeX = fontSizeX
-        self.fontSizeY = fontSizeY
-        # self.drawWindw()
+
+    def __init__(self, fontSizeX, fontSizeY, width, height):
+        self.fontSizeX, self.fontSizeY = fontSizeX, fontSizeY
+        self.piceW, self.piceH = width, height  # In Tiles
+        self.windowW, self.windowH = max(300, width * self.fontSizeX + 30), (height * self.fontSizeY + 100)
 
     def drawWindw(self, width, height):
         """
@@ -18,17 +19,12 @@ class Windw:
         :param height:
         :return:
         """
-        self.win = gr.GraphWin('Planting Lang Management', width * self.fontSizeX + 20, height * self.fontSizeY + 20)
+        self.win = gr.GraphWin('Planting Lang Management', self.windowW, self.windowH)
         self.win.setBackground('black')
 
-    def drawChar(self, char: str, x: int, y: int, clr=None):
+    def drawChar(self, char: str, x: int, y: int, clr=None, fontSize=None):
         """
         Draws char wher spesified
-        :param char: str
-        :param x: int
-        :param y: int
-        :param clr: str
-        :return:None
         """
         if clr is None:
             clr = self._getDrawColor(char)
@@ -39,7 +35,13 @@ class Windw:
 
         labelBox = gr.Text(gr.Point((x + 1) * self.fontSizeX, (y + 1) * self.fontSizeY), char)
         labelBox.setTextColor(clr)
-        labelBox.draw(self.win)
+
+        if not fontSize is None:
+            labelBox.setSize(fontSize)
+            labelBox.draw(self.win)
+        else:
+            labelBox.setSize(12)
+            labelBox.draw(self.win)
 
     def _getDrawColor(self, ch: str):
         """

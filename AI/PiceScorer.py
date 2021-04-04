@@ -20,3 +20,4 @@ class PiceScore:
         """
         self.score = -self.planter.deadCount
 
+

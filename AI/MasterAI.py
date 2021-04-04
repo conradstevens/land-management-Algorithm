@@ -3,9 +3,9 @@ from AI.Agent import PiceRunner
 from AI.PlantModel import PlantModel
 from AI.PlantModel import Qtrainer
 from tests.Tester import getBasic_Pice_and_Planter
+from AI.Stats import Stats
 import PiceClasses.Pice
 from PlanterClasses.PlanterMain import Planter
-import random
 import time
 
 
@@ -19,20 +19,21 @@ class MasterAI:
         self.agent, self.piceRunner = agent, piceRunner
         self.gama, self.lr = gama, lr
         self.curModel = PlantModel(self.agent.inputSize, agent.inputSize, 4)
-        self.nGames = 0
-        self.highScore = 0
+        self.stats = Stats(self.agent.planter.pice.window)
+
         # TODO self.highScoreModel
 
     def playPice(self):
         """
         runs through the pice with the current model
         """
-        for i in range(1, 200):
-            time.sleep(0.05)
+        self.stats.drawStats()
+        while not planter.finished:
             self.piceRunner.playPice(self.curModel, self.chanceofRandMove())
+            time.sleep(0.1)
 
     def chanceofRandMove(self):
-        return (80 - self.nGames) / 200
+        return (80 - self.stats.nGames) / 200
 
 
 if __name__ == '__main__':

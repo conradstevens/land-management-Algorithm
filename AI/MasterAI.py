@@ -30,7 +30,7 @@ class MasterAI:
         self.stats.drawStats()
         while not planter.finished:
             self.piceRunner.playPice(self.curModel, self.chanceofRandMove())
-            time.sleep(0.1)
+            time.sleep(1)
 
     def chanceofRandMove(self):
         return (80 - self.stats.nGames) / 200

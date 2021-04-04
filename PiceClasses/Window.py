@@ -38,6 +38,7 @@ class Windw:
 
         if not fontSize is None:
             labelBox.setSize(fontSize)
+            labelBox.setFace('courier')
             labelBox.draw(self.win)
         else:
             labelBox.setSize(12)

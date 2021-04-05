@@ -1,4 +1,5 @@
 from PiceClasses.Pice import Pice
+import torch
 from PlanterClasses.PlanterMain import Planter
 
 
@@ -12,12 +13,17 @@ class PiceScore:
 
     def __init__(self, planter: Planter):
         self.planter, self.pice = planter, planter.pice
+        self.oldScore = 0
         self.score = 0
+        self.deltaScore = 0
 
     def scorePice(self):
         """
         :return: score of the pice
         """
-        self.score = -self.planter.deadCount
+        self.oldScore = self.score
+        self.score = self.planter.plantCount - self.planter.deadCount
+        self.deltaScore = torch.tensor(self.score - self.oldScore, dtype=torch.float)
+        return self.score
 
 

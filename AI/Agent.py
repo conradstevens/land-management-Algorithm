@@ -55,6 +55,7 @@ class PiceRunner:
         move = self.getMove()
         nx, ny = self._getMoveFromLst(move)
         self.agent.planter.move(nx, ny, plant=True)
+        return torch.tensor(move, dtype=torch.float)
 
     def getMove(self):
         """

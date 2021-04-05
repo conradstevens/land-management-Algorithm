@@ -19,6 +19,7 @@ class Planter:
 
         self.finished = False
         self.deadCount = 0
+        self.plantCount = 0
 
         self.placePlanter()
 
@@ -87,6 +88,7 @@ class Planter:
         """
         if self.getUderTile().isPlantable and self.bagCount > 0:
             self.bagCount -= 1
+            self.plantCount += 1
             self.getUderTile().char = 'T'
             self.getUderTile().isPlantable = False
             self.getUderTile().isPlanted = True

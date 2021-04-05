@@ -8,6 +8,28 @@ class Stats:
         self.highScore, self.piceScore, self.deadCount, self.coveredLand, self.nGames = 1000, 0, 0, 0, 0
         self.window = window
 
+
+    def updateStats(self, highScore=None, piceScore=None, deadCount=None, coveredLand=None, nGames=None):
+        """
+        Updates the states of the pice
+        """
+        if not highScore is None:
+            self.highScore = highScore
+            self._drawStat('High Score', str(self.highScore), 1, 1)
+        if not piceScore is None:
+            self.piceScore = piceScore
+            self._drawStat('Pice Score', str(self.piceScore), 1, 2)
+        if not deadCount is None:
+            self.deadCount = deadCount
+            self._drawStat('Dead Walks', str(self.deadCount), 2, 2)
+        if not coveredLand is None:
+            self.coveredLand = coveredLand
+            self._drawStat('Covered Land', str(self.coveredLand), 2, 1)
+        if not nGames is None:
+            self.nGames = nGames
+            self._drawStat('Game Number', str(self.piceScore), 1, 3)
+        self.drawStats()
+
     def drawStats(self):
         """
         draws all the stats

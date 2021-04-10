@@ -61,3 +61,7 @@ class Windw:
         if ch == '☻':
             return 'yellow'
         return 'white'
+
+    def terminate(self):
+        """ Closes the window """
+        self.win.close()

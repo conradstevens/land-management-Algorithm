@@ -49,35 +49,22 @@ class Qtrainer:
         self.criterion = nn.MSELoss
 
     def trainStep(self, state, action, reward, nextState, done):
+        if len(state.shape) == 1:
+            state = torch.unsqueeze(state, 0)
+            nextState = torch.unsqueeze(nextState, 0)
+            action = torch.unsqueeze(action, 0)
+            reward = torch.unsqueeze(reward, 0)
+            done = (done, )
 
         pred = self.model(state)
         target = pred.clone()
 
-        Qnew = reward.item()
-        if not done:
-            Qnew = reward.item() + self.gama + torch.max(self.model(nextState))
+        for idx in range(len(done)):
+            Qnew = reward[idx]
+            if not done[idx]:
+                Qnew = reward[idx] + self.gama * torch.max(self.model(nextState[idx]))
 
-        target[torch.argmax(self.model(nextState)).item()]  = Qnew
-
-
-
-
-        # if len(state.shape) == 1:
-        #     state = torch.unsqueeze(state, 0)
-        #     nextState = torch.unsqueeze(nextState, 0)
-        #     action = torch.unsqueeze(action, 0)
-        #     reward = torch.unsqueeze(reward, 0)
-        #     done = (done, )
-#
-        # pred = self.model(state)
-#
-        # target = pred.clone()
-        # for idx in range(len(done)):
-        #     Qnew = reward[idx]
-        #     if not done[idx]:
-        #         Qnew = reward[idx] + self.gama * torch.max(self.model(nextState[idx]))
-#
-        #     target[idx][torch.argmax(action[idx]).item()] = Qnew
+            target[idx][torch.argmax(action[idx]).item()] = Qnew
 
         self.optimizer.zero_grad()
         loss = self.criterion(target, pred)

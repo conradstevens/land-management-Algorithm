@@ -8,7 +8,6 @@ class Stats:
         self.highScore, self.piceScore, self.deadCount, self.coveredLand, self.nGames = 1000, 0, 0, 0, 0
         self.window = window
 
-
     def updateStats(self, highScore=None, piceScore=None, deadCount=None, coveredLand=None, nGames=None):
         """
         Updates the states of the pice

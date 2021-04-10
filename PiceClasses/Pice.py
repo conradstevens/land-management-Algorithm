@@ -7,6 +7,7 @@ class Pice:
     """
 
     def __init__(self, fileName: str):
+        self.fileName = fileName
         self.piceMatrix = []
         self.width, self.height = self.loadPiceMatrix(fileName)
 
@@ -63,6 +64,10 @@ class Pice:
     def drawChar(self, char, x, y, clr=None):
         pass
 
+    def terminate(self):
+        """ Terminates window if has one"""
+        pass
+
 
 class PiceWind(Pice):
     """"
@@ -87,6 +92,10 @@ class PiceWind(Pice):
         Draws the character in the window
         """
         self.window.drawChar(char, x, y, clr=clr)
+
+    def terminate(self):
+        """ Terminates window if has one"""
+        self.window.terminate()
 
 
 class Tile:

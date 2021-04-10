@@ -15,7 +15,7 @@ class PiceScore:
         self.planter, self.pice = planter, planter.pice
         self.oldScore = 0
         self.score = 0
-        self.deltaScore = 0
+        self.reward = 0
 
     def scorePice(self):
         """
@@ -23,7 +23,7 @@ class PiceScore:
         """
         self.oldScore = self.score
         self.score = self.planter.plantCount - self.planter.deadCount
-        self.deltaScore = torch.tensor(self.score - self.oldScore, dtype=torch.float)
-        return self.score
+        self.reward = self.score - self.oldScore
+        return self.reward
 
 

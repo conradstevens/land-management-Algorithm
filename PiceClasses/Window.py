@@ -29,10 +29,7 @@ class Windw:
         if clr is None:
             clr = self._getDrawColor(char)
 
-        labelBox = gr.Text(gr.Point((x + 1) * self.fontSizeX, (y + 1) * self.fontSizeY), '█')
-        labelBox.setTextColor('black')
-        labelBox.draw(self.win)
-
+        self.erase(x, y)
         labelBox = gr.Text(gr.Point((x + 1) * self.fontSizeX, (y + 1) * self.fontSizeY), char)
         labelBox.setTextColor(clr)
 
@@ -43,6 +40,12 @@ class Windw:
         else:
             labelBox.setSize(12)
             labelBox.draw(self.win)
+
+    def erase(self, x, y, clr='black'):
+        """ Draws a black square"""
+        labelBox = gr.Text(gr.Point((x + 1) * self.fontSizeX, (y + 1) * self.fontSizeY), '█')
+        labelBox.setTextColor(clr)
+        labelBox.draw(self.win)
 
     def _getDrawColor(self, ch: str):
         """

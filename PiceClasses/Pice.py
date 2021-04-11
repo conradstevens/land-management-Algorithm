@@ -10,6 +10,7 @@ class Pice:
         self.fileName = fileName
         self.piceMatrix = []
         self.width, self.height = self.loadPiceMatrix(fileName)
+        self.window = None
 
     def __str__(self):
         for row in self.piceMatrix:

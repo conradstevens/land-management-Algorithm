@@ -24,9 +24,7 @@ class Agent:
 
     def getInputTensor(self):
         """ :return: The input tensor """
-        tList = [self.planter.bagSize, self.planter.bagCount]
-        tList = tList + self.getVisionData()
-        return torch.FloatTensor(tList)
+        return torch.FloatTensor(self.getVisionData())
 
     def getVisionData(self):
         """
@@ -61,12 +59,14 @@ class Agent:
             move[dirNum] = 1
         return move
 
-    def newPice(self, render=False):
+    def newPice(self, epoch, render=False):
         """ Creates a new pice and places the planter in it"""
         if render:
-            self.planter.pice = PiceWind(self.fileName, 12)
+            pice = PiceWind(self.fileName, 12)
         else:
-            self.planter.pice = Pice(self.fileName)
+            pice = Pice(self.fileName)
+        self.planter = Planter(self.bagSize, self.viewDistance, pice)
+        self.piceScore.resetNewPice(epoch, self.planter)
 
     def _doRand(self):
         return random.random() < self.chanceDoRand

@@ -95,6 +95,3 @@ class ScoreDisplay:
             self.window.drawChar('████████████████',
                                  (bX - 1) * 7 + 2, self.window.piceH + bY, 'black', fontSize=textlen)
             self.window.drawChar(textStr, (bX - 1) * 7 + 2, self.window.piceH + bY, 'white', fontSize=textlen)
-
-
-

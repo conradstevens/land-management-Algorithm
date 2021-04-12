@@ -62,7 +62,7 @@ class Pice:
         self.piceMatrix[y][x].char = char
         self.drawChar(char, x, y, clr)
 
-    def drawChar(self, char, x, y, clr=None):
+    def drawChar(self, char, x, y, clr=None, isSeen=True, isDead=False):
         pass
 
     def terminate(self):
@@ -88,11 +88,11 @@ class PiceWind(Pice):
             for c in r:
                 self.window.drawChar(c.char, c.x, c.y, clr='blue')
 
-    def drawChar(self, char, x, y, clr=None):
+    def drawChar(self, char, x, y, clr=None, isSeen=True, isDead=False):
         """
         Draws the character in the window
         """
-        self.window.drawChar(char, x, y, clr=clr)
+        self.window.drawChar(char, x, y, clr=clr, isSeen=isSeen, isDead=isDead)
 
     def terminate(self):
         """ Terminates window if has one"""

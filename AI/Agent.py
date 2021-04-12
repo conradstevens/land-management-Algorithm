@@ -53,6 +53,7 @@ class Agent:
             pice = Pice(self.fileName)
         self.planter = Planter(self.bagSize, self.viewDistance, pice)
         self.piceScore.resetNewPice(epoch, self.planter)
+        self.piceScore.gameNum += 1
 
     @staticmethod
     def _getMoveFromLst(move):

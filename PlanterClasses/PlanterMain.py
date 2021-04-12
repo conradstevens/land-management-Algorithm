@@ -39,8 +39,8 @@ class Planter:
             self.noWalk = 0
         else:
             self.noWalk += 1
-            if self.noWalk > 5:
-                self.finished = True
+        if self.noWalk > 5 or (self.plantCount + self.deadCount) > 150:
+            self.finished = True
 
         if plant:
             self.plant()
@@ -67,7 +67,7 @@ class Planter:
                 tile = self.getTile(t[0], t[1], selfRelative=False)
                 if not tile is None:
                     tile.isSeen = False
-                    self.pice.drawChar(tile.char, t[0], t[1], 'blue')
+                    self.pice.drawChar(tile.char, t[0], t[1], isSeen=tile.isSeen, isDead=tile.isDead)
 
     def getView(self):
         """
@@ -79,8 +79,8 @@ class Planter:
             tile = self.getTile(nx=vx, ny=vy, selfRelative=True)
 
             if tile is not None and not tile.isSeen and not(vx == 0 and vy == 0):
-                self.pice.drawChar(tile.char, vx + self.x, vy + self.y)
                 tile.isSeen = True
+                self.pice.drawChar(tile.char, vx + self.x, vy + self.y, isSeen=tile.isSeen, isDead=tile.isDead)
 
     def plant(self):
         """

@@ -25,7 +25,7 @@ class PiceScore:
         self.highScore = 0
         self.gameNum = 0
 
-    def scorePice(self):
+    def  scorePice(self):
         """
         :return: score of the pice
         """

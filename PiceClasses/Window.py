@@ -22,12 +22,12 @@ class Windw:
         self.win = gr.GraphWin('Planting Lang Management', self.windowW, self.windowH)
         self.win.setBackground('black')
 
-    def drawChar(self, char: str, x: int, y: int, clr=None, fontSize=None):
+    def drawChar(self, char: str, x: int, y: int, clr=None, fontSize=None, isSeen=True, isDead=False):
         """
         Draws char wher spesified
         """
         if clr is None:
-            clr = self._getDrawColor(char)
+            clr = self._getDrawColor(char, isSeen, isDead)
 
         self.erase(x, y)
         labelBox = gr.Text(gr.Point((x + 1) * self.fontSizeX, (y + 1) * self.fontSizeY), char)
@@ -47,23 +47,41 @@ class Windw:
         labelBox.setTextColor(clr)
         labelBox.draw(self.win)
 
-    def _getDrawColor(self, ch: str):
+    @staticmethod
+    def _getDrawColor(ch: str, isSeen, isDead):
         """
         Gets the color of the string that is to be drawn
         :param ch:
         :return: str
         """
-        if ch == 'T':
-            return 'green2'
-        if ch == 'D':
-            return 'red'
-        if ch == 'C':
-            return 'pink3'
-        if ch == '?':
-            return 'yellow'
-        if ch == '☻':
-            return 'yellow'
-        return 'white'
+        if isSeen:
+            if isDead:
+                return 'red'
+            if ch == 'T':
+                return 'green2'
+            if ch == 'D':
+                return 'red'
+            if ch == 'C':
+                return 'pink3'
+            if ch == '?':
+                return 'yellow'
+            if ch == '☻':
+                return 'yellow'
+            return 'white'
+        else: # Not seen
+            if isDead:
+                return 'dark red'
+            if ch == 'T':
+                return 'dark green'
+            if ch == 'D':
+                return 'dark red'
+            if ch == 'C':
+                return 'light pink'
+            if ch == '?':
+                return 'yellow'
+            if ch == '☻':
+                return 'yellow3'
+            return 'grey'
 
     def terminate(self):
         """ Closes the window """

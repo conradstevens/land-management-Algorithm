@@ -1,6 +1,7 @@
 from AI.Agent import Agent
 from AI.QTrainer import QTrainer
 import torch
+import random
 import time
 
 
@@ -33,28 +34,31 @@ class MasterAI:
         """ runs through the pice and updates the Q-table"""
         while not agent.planter.finished:
             curState = self.agent.state
-            action = self.qTrainer.getAction(curState)
+            action = self.qTrainer.getAction(curState, self.doRandomMove())
+
             newState, reward = self.agent.playAction(action)
 
-            # self.qTrainer.learn(curState, newState, reward)
+            self.qTrainer.learn(curState, newState, reward)
 
             if doRender:
                 time.sleep(0.2)
         self.agent.planter.pice.terminate()
 
-    def chanceofRandMove(self):
-        return (80 - self.agent.piceScore.gameNum) / 200
+    def doRandomMove(self):
+        """ :return Bool"""
+        return max(0.03, (10_000 - self.agent.piceScore.gameNum) / 50_000) < random.random()
+
 
 if __name__ == '__main__':
     agent = Agent(fileName='C:/Users/conra/Documents/land-management-Algorithm/PiceClasses/Pices/Pice1.txt',
                   bagSize=400,
-                  viwDistance=1)
+                  viwDistance=2)
     qTrainer = QTrainer(gama=0.9,
                         lr=0.1,
                         epsilon=0.5,
                         maxMemory=100_000)
     masterAi = MasterAI(agent=agent,
                         qTrainer=qTrainer,
-                        nEpochs=11,
-                        showEvery=5)
+                        nEpochs=100_000,
+                        showEvery=500)
     masterAi.train()

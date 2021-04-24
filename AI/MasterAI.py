@@ -1,6 +1,5 @@
 from AI.Agent import Agent
-from AI.QTrainer import QTrainer
-import torch
+from AI.Models.QTrainer import QTrainer
 import random
 import time
 
@@ -17,6 +16,7 @@ class MasterAI:
         # Logistical Classes
         self.agent = agent
         self.qTrainer = qTrainer
+        self.randChance = None  # TODO move to Model
         # training loop info
         self.nEpochs = nEpochs
         self.showEvery = showEvery
@@ -25,28 +25,30 @@ class MasterAI:
         """ The loop that trains the AI """
         for epoch in range(0, self.nEpochs):
             doRender = epoch % self.showEvery == 0
-            print(epoch, doRender)
+            if epoch % 500 == 0:
+                print(f'on gen {epoch}, random explore chance at: {self.randChance} loading...')
 
             self.agent.newPice(epoch, render=doRender)  # create a new pice, every showEvery
-            self.playPice(doRender)
+            self.playPice()
+            self.qTrainer.saveQToCSV(doSave=doRender)
 
-    def playPice(self, doRender):
+    def playPice(self):
         """ runs through the pice and updates the Q-table"""
         while not agent.planter.finished:
             curState = self.agent.state
             action = self.qTrainer.getAction(curState, self.doRandomMove())
-
             newState, reward = self.agent.playAction(action)
-
             self.qTrainer.learn(curState, newState, reward)
 
-            if doRender:
-                time.sleep(0.2)
         self.agent.planter.pice.terminate()
 
     def doRandomMove(self):
         """ :return Bool"""
-        return max(0.03, (10_000 - self.agent.piceScore.gameNum) / 50_000) < random.random()
+        endingChance = 0.03
+        startChance = 0.2
+        self.randChance = max(endingChance,
+                              (startChance * self.nEpochs - self.agent.piceScore.gameNum) / (self.nEpochs))
+        return self.randChance < random.random()
 
 
 if __name__ == '__main__':
@@ -56,9 +58,11 @@ if __name__ == '__main__':
     qTrainer = QTrainer(gama=0.9,
                         lr=0.1,
                         epsilon=0.5,
-                        maxMemory=100_000)
+                        maxMemory=100_000,
+                        plantReward=10,
+                        deadPenalty=-30)
     masterAi = MasterAI(agent=agent,
                         qTrainer=qTrainer,
                         nEpochs=100_000,
-                        showEvery=500)
+                        showEvery=20_000)
     masterAi.train()

@@ -25,7 +25,10 @@ class PiceScore:
         self.highScore = 0
         self.gameNum = 0
 
-    def  scorePice(self):
+        # Score management
+        self.scoreSave = {}
+
+    def scorePice(self):
         """
         :return: score of the pice
         """
@@ -55,6 +58,24 @@ class PiceScore:
         self.scoreDisplay.updateStats(piceScore=self.piceScore, deadCount=self.planter.deadCount,
                                       coveredLand=self.coveredLand, nGames=self.gameNum,
                                       highScore=max(0, self.highScore))
+
+    def saveScore(self):
+        """ Returns a Q of score data """
+        self.scoreSave = {'oldScore': self.oldScore,
+                          'piceScore': self.piceScore,
+                          'reward': self.reward,
+                          'coveredLand': self.coveredLand,
+                          'highScore': self.highScore,
+                          'gameNum': self.gameNum}
+
+    def loadScore(self):
+        """ Sets score fieltds to scoreQ """
+        self.oldScore = self.scoreSave['oldScore']
+        self.piceScore = self.scoreSave['piceScore']
+        self.reward = self.scoreSave['reward']
+        self.coveredLand = self.scoreSave['coveredLand']
+        self.highScore = self.scoreSave['highScore']
+        self.gameNum = self.scoreSave['gameNum']
 
 
 class ScoreDisplay:

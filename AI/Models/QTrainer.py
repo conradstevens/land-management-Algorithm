@@ -1,10 +1,16 @@
 import torch
 import random
+import csv
+
 
 class QTrainer:
-    def __init__(self, gama, lr, epsilon, maxMemory):
+    def __init__(self, gama, lr, epsilon, maxMemory, plantReward, deadPenalty):
         self.gama, self.lr, self.epsilon, self.maxMemory = gama, lr, epsilon, maxMemory
+        self.plantReward, self.deadPenalty = plantReward, deadPenalty
+
         self.qList = {}
+        self.actionQ = []  # TODO Make and Q of actions that will be scored then returnerd to zero
+
 
     def getAction(self, state, doRand):
         """
@@ -19,7 +25,7 @@ class QTrainer:
 
     def getElm(self, state):
         """ :return: tensor element with state
-        :rtype: QlistElm"""
+            :rtype: QlistElm"""
         if not state in self.qList:
             elm = QlistElm(state)
             self.qList.update(elm.getDicElm())
@@ -33,8 +39,22 @@ class QTrainer:
         maxOldQ = oldQElm.getMaxWeight()
         maxNewQ = newQElm.getMaxWeight()
 
+        if reward == 1:
+            reward = self.plantReward
+        elif reward == -1:
+            reward = self.deadPenalty
+
         newQ = (1 - self.lr) * maxOldQ + self.lr * (reward + self.gama * maxNewQ)
         oldQElm.setMaxWeight(newQ)
+
+    def saveQToCSV(self, doSave):
+        """ Saves to CSV """
+        if doSave:
+            with open('Models/QTable.csv', 'w') as csv_file:
+                writer = csv.writer(csv_file)
+                for state, elm in self.qList.items():
+                    wlist = elm.getStateAction()
+                    writer.writerow([state, wlist])
 
 
 class QlistElm:

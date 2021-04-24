@@ -4,6 +4,7 @@ PlanterClasses that moves and makes decisions in the land
 from PiceClasses.Pice import Pice
 from PiceClasses.Pice import Tile
 from PlanterClasses.Vision import Vision
+import copy
 
 
 class Planter:
@@ -11,15 +12,21 @@ class Planter:
         """
         PlanterClasses must be assigned a pice. this is done in the pice class
         """
+        # Dependant Objs
         self.vision = Vision(viwDistance)
         self.pice = pice
         self.bagSize, self.bagCount = bagSize, bagSize
-        self.x, self.y = 0, 0
-        self.noWalk = 0
 
+        # Planter Parameters
+        self.x, self.y = 0, 0
+        self.prevX, self.prevY = 0, 0
+        self.noWalk = 0
         self.finished = False
         self.deadCount = 0
         self.plantCount = 0
+
+        # AI Objs
+        self.tileSave = Tile(-1, -1, 'pass')
 
         self.placePlanter()
 
@@ -52,18 +59,20 @@ class Planter:
         """
         moves self and updates the view
         """
+        self.prevX, self.prevY = self.x, self.y
+        self.x, self.y = nx + self.x, ny + self.y
+        self.tileSave = copy.copy(self.getUderTile())
+
         if rememberAllView:
-            self.x, self.y = nx + self.x, ny + self.y
             self.getView()
 
-        else: # rememberAllView = False
+        else:  # RememberAllView = False
             oldView = self._getViewList()
-            self.x, self.y = nx + self.x, ny + self.y
             self.getView()
             newView = self._getViewList()
-            nolongerSeen = [item for item in oldView if item not in newView]
+            noLngerSeen = [item for item in oldView if item not in newView]
 
-            for t in nolongerSeen:
+            for t in noLngerSeen:
                 tile = self.getTile(t[0], t[1], selfRelative=False)
                 if not tile is None:
                     tile.isSeen = False

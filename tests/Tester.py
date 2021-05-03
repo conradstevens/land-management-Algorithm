@@ -17,7 +17,7 @@ def getBasic_AI_Classes():
     """ gets the basic AI calsses and basic planter classes """
     agent = Agent(fileName='C:/Users/conra/Documents/land-management-Algorithm/PiceClasses/Pices/Pice1.txt',
                   bagSize=400,
-                  viwDistance=2)
+                  viwDistance=1)
     qTrainer = QTrainer(gama=0.9,
                         lr=0.1,
                         epsilon=0.5,

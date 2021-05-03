@@ -8,8 +8,6 @@ class MasterAI:
     """
     Oversees Agent and trainer,
     creating and working models.
-    TODO/ To be trained?
-    TODO/ Refactor to run different models
     """
 
     def __init__(self, agent: Agent, qTrainer: QTrainer, nEpochs: int, showEvery: int):
@@ -64,5 +62,5 @@ if __name__ == '__main__':
     masterAi = MasterAI(agent=agent,
                         qTrainer=qTrainer,
                         nEpochs=100_000,
-                        showEvery=20_000)
+                        showEvery=5_000)
     masterAi.train()

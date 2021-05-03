@@ -1,6 +1,23 @@
 from PiceClasses.Window import Windw
 
 
+class Tile:
+    isSeen = False
+    isPlantable = False
+    isPlanted = False
+    isDead = False
+    isWalkable = True
+
+    def __init__(self, x, y, char):
+        self.x, self.y, = x, y
+        self.char = char
+
+        if char == '.':
+            self.isPlantable = True
+        elif char == 'X':
+            self.isWalkable = False
+
+
 class Pice:
     """
     Keeps track of what is in the pice and updates and draws the pice
@@ -62,6 +79,11 @@ class Pice:
         self.piceMatrix[y][x].char = char
         self.drawChar(char, x, y, clr)
 
+    def setTile(self, tile: Tile, x: int, y: int):
+        """ Sets the tile in the spesified coordinate"""
+        self.piceMatrix[y][x] = tile
+        return tile
+
     def drawChar(self, char, x, y, clr=None, isSeen=True, isDead=False):
         pass
 
@@ -98,19 +120,3 @@ class PiceWind(Pice):
         """ Terminates window if has one"""
         self.window.terminate()
 
-
-class Tile:
-    isSeen = False
-    isPlantable = False
-    isPlanted = False
-    isDead = False
-    isWalkable = True
-
-    def __init__(self, x, y, char):
-        self.x, self.y, = x, y
-        self.char = char
-
-        if char == '.':
-            self.isPlantable = True
-        elif char == 'X':
-            self.isWalkable = False

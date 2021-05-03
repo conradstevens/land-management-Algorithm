@@ -81,6 +81,8 @@ class Windw:
                 return 'yellow'
             if ch == '☻':
                 return 'yellow3'
+            if ch == '.':
+                return 'blue'
             return 'grey'
 
     def terminate(self):

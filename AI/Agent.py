@@ -35,13 +35,20 @@ class Agent:
                 visionData.append((not tile is None) and tile.isPlantable)
         return visionData
 
-    def playAction(self, moveN):
+    def playAction(self, moveN, updateView=True):
         """ Trains self.model one generation
+        TODO/ Teach planter to even plant
         :moveN = 1,2,3,4
         :return state after move, reward"""
         nx, ny = self._getMoveFromLst(moveN)
-        self.planter.move(nx, ny, plant=True)
+        self.planter.move(nx, ny, plant=True, updateView=updateView)
         return self.getState(), self.piceScore.scorePice()
+
+    def undoAction(self, move, revTile):
+        """ Undoes move spescifief """
+        revMove = self._getNegMove(move)
+        nx, ny = self._getMoveFromLst(revMove)
+        self.planter.move(nx, ny, plant=True, revTile=revTile, updateView=False)
 
     def newPice(self, epoch, render=False):
         """ Creates a new pice and places the planter in it"""
@@ -53,13 +60,6 @@ class Agent:
         self.piceScore.resetNewPice(epoch, self.planter)
         self.piceScore.gameNum += 1
 
-    def undo(self):
-        """
-        Undoes a move, resets everything
-        this is for the Ai to run a few moves in advance
-        """
-        pass
-
     def playQ(self, playQ: list):
         """
         a Q of moves for the AI to play. After the Q is played the score is returned and the pice is reset
@@ -69,7 +69,7 @@ class Agent:
         self.piceScore.saveScore()
         for move in playQ:
             time.sleep(0.5)
-            self.playAction(move)
+            self.playAction(move, updateView=False)
             tileSaves.append(self.planter.tileSave)
 
         pathReward = self.piceScore.piceScore - self.piceScore.scoreSave['piceScore']
@@ -79,8 +79,7 @@ class Agent:
         i = 0
         for move in playQ:
             time.sleep(0.5)
-            self.playAction(self._getNegMove(move))
-            self.planter.pice.piceMatrix[self.planter.prevY][self.planter.prevX] = tileSaves[i]
+            self.undoAction(move, revTile=tileSaves[i])
             i += 1
 
         self.piceScore.loadScore()

@@ -30,19 +30,25 @@ class Planter:
 
         self.placePlanter()
 
-    def move(self, nx: int, ny: int, plant: bool):
+    def move(self, nx: int, ny: int, plant: bool, revTile=None, updateView=True):
         """
         Moves the planter x+nx, y+ny
         """
         isDead = self.getDead()
 
-        if self.pice.piceMatrix[self.y + ny][self.x + nx].isWalkable:
+        if self.getTile(nx, ny, selfRelative=True).isWalkable:
+            self._updateMove(nx, ny)
+            if updateView:
+                self._updateView(nx, ny)
 
-            self._updateMoveAndView(nx, ny)
-            self.bagUp()
+            if revTile is not None:
+                pastTile = self.pice.setTile(revTile, self.x - nx, self.y - ny)
+            else:
+                pastTile = self.getTile(-nx, -ny, selfRelative=True)
 
             self.pice.drawChar('☻', self.x, self.y)  # Note does not update the pice
-            self.pice.drawChar(self.getTile(-nx, -ny, selfRelative=True).char, self.x - nx, self.y - ny, isDead)
+            self.pice.drawChar(pastTile.char, pastTile.x, pastTile.y, isSeen=pastTile.isSeen, isDead=pastTile.isDead)
+
             self.noWalk = 0
         else:
             self.noWalk += 1
@@ -55,14 +61,18 @@ class Planter:
             self.getUderTile().isDead = True
             self.deadCount += 1
 
-    def _updateMoveAndView(self, nx, ny, rememberAllView=False):
-        """
-        moves self and updates the view
-        """
+        self.bagUp()
+
+    def _updateMove(self, nx, ny):
+        """ Updates placement of planter in pice """
         self.prevX, self.prevY = self.x, self.y
         self.x, self.y = nx + self.x, ny + self.y
         self.tileSave = copy.copy(self.getUderTile())
 
+    def _updateView(self, nx, ny, rememberAllView=False):
+        """
+        moves self and updates the view
+        """
         if rememberAllView:
             self.getView()
 
@@ -138,7 +148,7 @@ class Planter:
             return visionTile
         return None
 
-    def getTile(self, nx, ny, selfRelative=False):
+    def getTile(self, nx: int, ny: int, selfRelative: bool = False):
         """
         Returns the tile under self + x + y
         :rtype Tile

@@ -75,20 +75,21 @@ class Planter:
         """
         moves self and updates the view
         """
-        if rememberAllView:
-            self.getView()
+        if self.visionOn:
+            if rememberAllView:
+                self.getView()
 
-        else:  # RememberAllView = False
-            oldView = self._getViewList()
-            self.getView()
-            newView = self._getViewList()
-            noLngerSeen = [item for item in oldView if item not in newView]
+            else:  # RememberAllView = False
+                oldView = self._getViewList()
+                self.getView()
+                newView = self._getViewList()
+                noLngerSeen = [item for item in oldView if item not in newView]
 
-            for t in noLngerSeen:
-                tile = self.getTile(t[0], t[1], selfRelative=False)
-                if not tile is None:
-                    tile.isSeen = False
-                    self.pice.drawChar(tile.char, t[0], t[1], isSeen=tile.isSeen, isDead=tile.isDead)
+                for t in noLngerSeen:
+                    tile = self.getTile(t[0], t[1], selfRelative=False)
+                    if not tile is None:
+                        tile.isSeen = False
+                        self.pice.drawChar(tile.char, t[0], t[1], isSeen=tile.isSeen, isDead=tile.isDead)
 
     def getView(self):
         """

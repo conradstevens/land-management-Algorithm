@@ -50,11 +50,11 @@ class Agent:
                 visionData.append((not tile is None) and tile.isPlantable)
         return visionData
 
-    def playAction(self, moveN, updateView=True):
+    def playAction(self, moveN):
         """ Trains self.model one generation
         TODO/ Teach planter to even plant
         :moveN = 1,2,3,4
         :return state after move, reward"""
-        self.action.playAction(moveN, updateView=True)
+        self.action.playAction(moveN)
         return self.getState(), self.piceScore.scorePice()
 

@@ -24,6 +24,8 @@ class Planter:
         self.finished = False
         self.deadCount = 0
         self.plantCount = 0
+        self.view = []
+        self.oldView = []
 
         # AI Objs
         self.tileSave = Tile(-1, -1, 'pass')
@@ -40,8 +42,7 @@ class Planter:
 
         if self.getTile(nx, ny, selfRelative=True).isWalkable:
             self._updateMove(nx, ny)
-            if updateView:
-                self._updateView(nx, ny)
+            self._updateView(nx, ny)
 
             if revTile is not None:
                 pastTile = self.pice.setTile(revTile, self.x - nx, self.y - ny)
@@ -80,10 +81,10 @@ class Planter:
                 self.getView()
 
             else:  # RememberAllView = False
-                oldView = self._getViewList()
+                self.oldView = self.view
                 self.getView()
-                newView = self._getViewList()
-                noLngerSeen = [item for item in oldView if item not in newView]
+                self.view = self._getViewList()
+                noLngerSeen = [item for item in self.oldView if item not in self.view]
 
                 for t in noLngerSeen:
                     tile = self.getTile(t[0], t[1], selfRelative=False)

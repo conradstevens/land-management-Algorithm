@@ -1,7 +1,6 @@
-from AI.Agent import Agent
+from AI.Agent.Agent import Agent
 from AI.Models.QTrainer import QTrainer
 import random
-import time
 
 
 class MasterAI:

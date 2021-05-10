@@ -27,8 +27,10 @@ class Planter:
 
         # AI Objs
         self.tileSave = Tile(-1, -1, 'pass')
-
         self.placePlanter()
+
+        # AI Perams
+        self.visionOn = True  # TODO use as framework for play Q
 
     def move(self, nx: int, ny: int, plant: bool, revTile=None, updateView=True):
         """

@@ -1,6 +1,6 @@
 from PlanterClasses.PlanterMain import Planter
 from tests.PiceManager import *
-from AI.Agent import Agent
+from AI.Agent.Agent import Agent
 from AI.Models.QTrainer import QTrainer
 from AI.MasterAI import MasterAI
 import unittest
@@ -87,7 +87,7 @@ class TestPiceManager(unittest.TestCase):
     def test_moveQ(self):
         agent, masterAi = getBasic_AI_Classes()
         agent.newPice(1, render=True)
-        agent.playQ([1, 1, 1, 1])
+        agent.action.playQ([1, 1, 1, 1])
 
 
 

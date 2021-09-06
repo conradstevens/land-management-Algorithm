@@ -1,4 +1,4 @@
-from PiceClasses.Window import Windw
+from World.window import Windw
 
 
 class Pice:

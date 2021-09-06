@@ -1,12 +1,10 @@
 import torch
-import numpy
 import random
-from PlanterClasses.PlanterMain import Planter
-from PiceClasses.Pice import Pice
-from PiceClasses.Pice import PiceWind
-from AI.PlantModel import PlantModel
-from AI.PiceScorer import PiceScore
-from tests.Tester import getBasic_Pice_and_Planter
+from World.planterMain import Planter
+from World.pice import Pice
+from World.pice import PiceWind
+from AI.plantModel import PlantModel
+from AI.piceScorer import PiceScore
 
 
 class Agent:

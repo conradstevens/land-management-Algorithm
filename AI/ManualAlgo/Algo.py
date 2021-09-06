@@ -1,8 +1,8 @@
 """
 Algorithm a planter can use to plant
 """
-from PlanterClasses.PlanterMain import Planter
-from PiceClasses.Pice import Pice
+from World.planterMain import Planter
+
 
 class Algo:
     def __init__(self, planter: Planter):

@@ -15,9 +15,9 @@ Jonathan scooter Clark, an leading member of the reforestiation community has sp
 algorithm in the next version of his book: 'Step by Step, a guide to tree planting for beginners'.
 """
 
-from PiceClasses.Pice import *
-from PlanterClasses.PlanterMain import Planter
-from ManualAlgo.Algo import Algo
+from World.pice import *
+from World.planterMain import Planter
+from AI.ManualAlgo.Algo import Algo
 
 
 def runManualAlgo(fileName: str, bagSize: int, viewDistance: int, stepTime: float):
@@ -45,7 +45,7 @@ def runSampleManualAlgo():
     A Sample test of the algorithm
     :return:
     """
-    fileName = 'C:/Users/conra/Documents/land-management-Algorithm/PiceClasses/Pices/Pice1.txt'
+    fileName = 'World/Pices/pice1.txt'
     bagSize = 400
     viewDistance = 4
     stepTime = 0.5
@@ -58,7 +58,7 @@ def runAI():
     Runs the AI ***** More Detail Later
     :return:
     """
-    fileName = 'C:/Users/conra/Documents/land-management-Algorithm/Pice/Pices/Pice1.txt'
+    fileName = 'C:/Users/conra/Documents/land-management-Algorithm/World/Pices'
     bagSize = 400
     viewDistance = 4
 

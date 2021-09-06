@@ -1,9 +1,9 @@
 """
 PlanterClasses that moves and makes decisions in the land
 """
-from PiceClasses.Pice import Pice
-from PiceClasses.Pice import Tile
-from PlanterClasses.Vision import Vision
+from World.pice import Pice
+from World.pice import Tile
+from World.vision import Vision
 
 
 class Planter:

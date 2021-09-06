@@ -1,5 +1,5 @@
 from PlanterClasses.PlanterMain import Planter
-from tests.PiceManager import *
+from Tests.piceManager import *
 import unittest
 
 
@@ -8,7 +8,7 @@ def getBasic_Pice_and_Planter():
     gets a basic pice with 400 trees
     :rtype Pice
     """
-    pice = Pice(fileName='C:/Users/conra/Documents/land-management-Algorithm/PiceClasses/Pices/Pice1.txt')
+    pice = Pice(fileName='C:/Users/conra/Documents/land-management-Algorithm/PiceClasses/Pices/pice1.txt')
     planter = Planter(bagSize=400, viwDistance=2, pice=pice)
     return pice, planter
 

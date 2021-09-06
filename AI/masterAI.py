@@ -1,10 +1,6 @@
-from AI.Agent import Agent
-from AI.PlantModel import PlantModel
-from AI.PlantModel import Qtrainer
-from tests.Tester import getBasic_Pice_and_Planter
-from AI.PiceScorer import PiceScore
-import PiceClasses.Pice
-from PlanterClasses.PlanterMain import Planter
+from AI.agent import Agent
+from AI.plantModel import PlantModel
+from AI.plantModel import Qtrainer
 from collections import deque
 import torch
 import time
@@ -19,7 +15,7 @@ class MasterAI:
     """
 
     def __init__(self, agent: Agent, gama: float, lr: float, epsilon: float, nEpochs: int,
-                 maxMemory: int, showEvery: int):
+                 maxMemory: int, showEvery: int, printEvery: int, renderSleep: float):
 
         # Logistical Classes
         self.agent = agent
@@ -33,18 +29,22 @@ class MasterAI:
         self.epsilon = epsilon
         self.nEpochs = nEpochs
         self.showEvery = showEvery
+        self.printEvery = printEvery
+        self.renderSleep = renderSleep
 
     def train(self):
         """ The loop that trains the AI """
         for epoch in range(0, self.nEpochs):
             doRender = epoch % self.showEvery == 0
+            doPrint = epoch % self.printEvery == 0
 
-            print(epoch, doRender)
+            if doPrint:
+                print('Epoch num: ' + str(epoch))
 
             self.agent.newPice(epoch, render=doRender)  # create a new pice, every showEvery
-            self.playPice()
+            self.playPice(doRender)
 
-    def playPice(self):
+    def playPice(self, doRender):
         """ runs through the pice and updates the Q-table"""
         while not agent.planter.finished:
             curState = self.agent.inputTensor
@@ -53,7 +53,9 @@ class MasterAI:
             nextState = self.agent.getInputTensor()
             self._remember(curState, action, reward, nextState, agent.planter.finished)
 
-            time.sleep(1)
+            if doRender:
+                time.sleep(self.renderSleep)
+
         self.agent.planter.pice.terminate()
 
 
@@ -85,14 +87,16 @@ class MasterAI:
         return (80 - self.agent.piceScore.gameNum) / 200
 
 if __name__ == '__main__':
-    agent = Agent(fileName='C:/Users/conra/Documents/land-management-Algorithm/PiceClasses/Pices/Pice1.txt',
+    agent = Agent(fileName='C:/Users/conra/Documents/land-management-Algorithm/World/Pices/pice1.txt',
                   bagSize=400,
                   viwDistance=1)
     masterAi = MasterAI(agent=agent,
                         gama=0.9,
                         lr=0.1,
                         epsilon=0.5,
-                        nEpochs=11,
+                        nEpochs=1001,
                         maxMemory=100_000,
-                        showEvery=5)
+                        showEvery=1000,
+                        printEvery=100,
+                        renderSleep=0.3)
     masterAi.train()

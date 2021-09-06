@@ -1,7 +1,5 @@
-from PiceClasses.Pice import Pice
-import torch
-from PiceClasses.Window import Windw
-from PlanterClasses.PlanterMain import Planter
+from World.window import Windw
+from World.planterMain import Planter
 
 
 class PiceScore:

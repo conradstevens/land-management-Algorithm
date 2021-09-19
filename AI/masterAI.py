@@ -61,9 +61,8 @@ class MasterAI:
             if doRender:
                 time.sleep(self.renderSleep)
 
-
         self.agent.planter.pice.terminate()
-
+        self.trainer.trainStep(self.model, replayMemory)
 
     def chanceofRandMove(self):
         return 1 - (self.epsilon + self.agent.piceScore.gameNum * (1 - self.epsilon) / self.nEpochs)

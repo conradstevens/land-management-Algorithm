@@ -1,7 +1,7 @@
 from AI.agent import Agent
 from AI.plantModel import PlantModel
 from AI.plantModel import Qtrainer
-from collections import deque
+from AI.replayMemory import ReplayMemory
 import torch
 import time
 
@@ -14,25 +14,26 @@ class MasterAI:
     TODO/ Refactor to run different models
     """
 
-    def __init__(self, agent: Agent, gama: float, lr: float, epsilon: float, nEpochs: int,
-                 maxMemory: int, showEvery: int, printEvery: int, renderSleep: float):
+    def __init__(self, agent: Agent, gama: float, lr: float, epsilon: float, nEpochs: int, batchSize: int,
+                 replayMemory: ReplayMemory, showEvery: int, printEvery: int, renderSleep: float):
 
         # Logistical Classes
         self.agent = agent
 
         # Trainer
         self.model = PlantModel(self.agent.inputSize, agent.inputSize, 4)
-        self.trainer = Qtrainer(self.model, lr, gama)
-        self.memory = deque(maxlen=maxMemory)
+        self.trainer = Qtrainer(lr, gama)
+        self.replayMemory = replayMemory
 
         # training loop info
         self.epsilon = epsilon
         self.nEpochs = nEpochs
+        self.batchSize = batchSize
         self.showEvery = showEvery
         self.printEvery = printEvery
         self.renderSleep = renderSleep
 
-    def train(self):
+    def trainLoop(self):
         """ The loop that trains the AI """
         for epoch in range(0, self.nEpochs):
             doRender = epoch % self.showEvery == 0
@@ -51,18 +52,18 @@ class MasterAI:
             action = self.agent.playAction(model=self.model, chanceDoRand=self.chanceofRandMove())
             reward = torch.tensor(self.agent.piceScore.scorePice(), dtype=torch.float)
             nextState = self.agent.getInputTensor()
-            self._remember(curState, action, reward, nextState, agent.planter.finished)
+
+            if agent.planter.finished:
+                self.replayMemory.push(curState, action, None, reward)
+            else:
+                self.replayMemory.push(curState, action, nextState, reward)
 
             if doRender:
                 time.sleep(self.renderSleep)
 
+
         self.agent.planter.pice.terminate()
 
-    def _remember(self, state, move, reward, nextState, done):
-        """
-        Records each move and associated reward
-        """
-        self.memory.append((state, move, reward, nextState, done))
 
     def chanceofRandMove(self):
         return 1 - (self.epsilon + self.agent.piceScore.gameNum * (1 - self.epsilon) / self.nEpochs)
@@ -73,13 +74,17 @@ if __name__ == '__main__':
     agent = Agent(fileName='C:/Users/conra/Documents/land-management-Algorithm/World/Pices/pice1.txt',
                   bagSize=400,
                   viwDistance=1)
+
+    replayMemory = ReplayMemory(capacity=100_000)
+
     masterAi = MasterAI(agent=agent,
                         gama=0.9,
                         lr=0.1,
-                        epsilon=0.5,
+                        epsilon=0.8,
                         nEpochs=1001,
-                        maxMemory=100_000,
+                        batchSize=100,
+                        replayMemory=replayMemory,
                         showEvery=1000,
                         printEvery=100,
                         renderSleep=0.3)
-    masterAi.train()
+    masterAi.trainLoop()

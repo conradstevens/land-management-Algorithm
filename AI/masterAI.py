@@ -58,25 +58,6 @@ class MasterAI:
 
         self.agent.planter.pice.terminate()
 
-
-    # def playPiceX(self):
-    #     """
-    #     runs through the pice with the current model
-    #     TODO
-    #     """
-    #     self.stats.drawStats()
-    #     while not agent.planter.finished:
-    #         curState = self.agent.inputTensor
-    #         action = self.piceRunner.playAction(self.model, self.chanceofRandMove())  # make move and get move as tensor
-    #         reward = torch.tensor(self.agent.piceScore.scorePice(), dtype=torch.float)
-    #         nextState = self.agent.getInputTensor()
-#
-    #         self._remember(curState, action, reward, nextState, planter.finished)
-    #         print((curState, action, reward, nextState, planter.finished))
-#
-    #         time.sleep(0.1)
-    #         return
-
     def _remember(self, state, move, reward, nextState, done):
         """
         Records each move and associated reward
@@ -84,9 +65,11 @@ class MasterAI:
         self.memory.append((state, move, reward, nextState, done))
 
     def chanceofRandMove(self):
-        return (80 - self.agent.piceScore.gameNum) / 200
+        return 1 - (self.epsilon + self.agent.piceScore.gameNum * (1 - self.epsilon) / self.nEpochs)
 
 if __name__ == '__main__':
+    ''' Current tensor: [is plantable, is walkable] across vision circle'''
+
     agent = Agent(fileName='C:/Users/conra/Documents/land-management-Algorithm/World/Pices/pice1.txt',
                   bagSize=400,
                   viwDistance=1)

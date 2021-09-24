@@ -4,7 +4,6 @@ import torch.optim as optim
 import torch.nn.functional as F
 import random
 import os
-import copy
 from AI.replayMemory import ReplayMemory
 
 
@@ -13,15 +12,22 @@ class PlantModel(nn.Module):
     The main AI model
     at this time it is only a 2 layer network
     """
-    def __init__(self, inputSize: int, hiddenSize: int, outputSize: int):
+    def __init__(self, inputSize: int, hiddenSize: int, outputSize: int, lr: float):
         """
         :param inputSize: bag size, bag count, vision list
         :param hiddenSize: middle network
         :param outputSize: always 4 for now
         """
         super().__init__()
-        self.linear1 = nn.Linear(inputSize, hiddenSize)
-        self.linear2 = nn.Linear(hiddenSize, outputSize)
+        self.inputSize, self.hiddenSize, self.outputSize = inputSize, hiddenSize, outputSize
+
+        self.net = torch.nn.Sequential(
+            nn.Linear(inputSize, hiddenSize),
+            nn.ReLU(),
+            nn.Linear(hiddenSize, outputSize),
+            nn.ReLU()
+        )
+        self.opt = optim.Adam(self.net.parameters(), lr)
 
     def forward(self, x):
         """
@@ -29,10 +35,7 @@ class PlantModel(nn.Module):
         :param x:
         :return:
         """
-        x.requires_grad_(True)
-        x = F.relu(self.linear1(x))
-        x = self.linear2(x)
-        return x
+        return self.net(x)
 
     def save(self, file_name='model.pth'):
         """
@@ -47,53 +50,37 @@ class PlantModel(nn.Module):
 
 
 class Qtrainer:
-    def __init__(self, lr: float, gamma: float):
-        self.lr, self.gama, = lr, gamma
+    def __init__(self, lr: float, gamma: float, batchSize):
+        self.lr, self.gama, self.batchSize = lr, gamma, batchSize
 
     def trainStep(self, model: PlantModel, replayMemory: ReplayMemory):
         """ Trains the AI Model based on a sample of memories memeories"""
-        policyNet = model.copy()
-        model.load_state_dict(policyNet.state_dict())
-        model.eval()
+        tgtModel = PlantModel(model.inputSize, model.hiddenSize, model.outputSize, self.lr)
+        tgtModel.load_state_dict(model.state_dict())
 
-        optimizer = optim.RMSprop(policyNet.parameters())
-
-        stepsDone = 0
-
-        transitionSample = self._sample(model, ReplayMemory)
+        transitionSample = self._sample(model, replayMemory)
         batch = replayMemory.transitions(*zip(*transitionSample))
 
-        nonFinalTrans = torch.tensor(tuple(map(lambda  s: s is not None, batch.nextState)), dtype=torch.bool)
-        nonFinalTransNextStates = torch.cat([s for s in batch.nextState if s is not None])
+        stateBatch = torch.stack([s for s in batch.state])
+        actionBatch = torch.stack([torch.tensor([a.max()]) for a in batch.action])
+        nextStateBatch = torch.stack([ns for ns in batch.nextState])
+        rewardBatch = torch.stack([r for r in batch.reward])
+        doneMask = torch.stack([torch.tensor(0) if s else torch.tensor(1) for s in batch.done])
 
-        stateBatch = torch.cat(batch.state)
-        actionBatch = torch.cat(batch.action)
-        rewardBatch = torch.cat(batch.reward)
+        with torch.no_grad():
+            qValsNext = tgtModel(nextStateBatch)
+        qValsNext = torch.stack([torch.tensor([a.max()]) for a in batch.action])
 
-        stateActionValues = policyNet(stateBatch).gather(1, actionBatch)
-        nextStateValues = torch.zeros(replayMemory.capacity)
-        nextStateValues[nonFinalTrans] = model(nonFinalTransNextStates).max(1)[0].detach()
+        model.opt.zero_grad()
+        loss = rewardBatch + qValsNext
 
-        # Compute teh expected Q Values
-        expectedStateActionValues = (nextStateValues * self.gama) + rewardBatch
-
-        # Compute Huber Loss
-        criterion = nn.SmoothL1Loss()
-        loss = criterion(stateActionValues, expectedStateActionValues.unsqueeze(1))
-
-        # Optiomize the model
-        optimizer.zero_grad()
-        loss.backward()
-        for param in policyNet.parameters():
-            param.grad.data.clamp_(-1, 1)
-        optimizer.step()
-
-
-    def _sample(self, model, ReplayMemory):
-        if len(ReplayMemory) < model.batchSize:
-            return
-        return random.sample(ReplayMemory, model.batchSize)
+        print(loss)
 
 
 
+
+    def _sample(self, model, replayMemory: ReplayMemory):
+        if len(replayMemory) < self.batchSize:
+            return replayMemory.sample(len(replayMemory))
+        return replayMemory.sample(self.batchSize)
 

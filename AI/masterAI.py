@@ -21,8 +21,8 @@ class MasterAI:
         self.agent = agent
 
         # Trainer
-        self.model = PlantModel(self.agent.inputSize, agent.inputSize, 4)
-        self.trainer = Qtrainer(lr, gama)
+        self.model = PlantModel(self.agent.inputSize, 32, 4, lr)
+        self.trainer = Qtrainer(lr, gama, batchSize)
         self.replayMemory = replayMemory
 
         # training loop info
@@ -48,15 +48,13 @@ class MasterAI:
     def playPice(self, doRender):
         """ runs through the pice and updates the Q-table"""
         while not agent.planter.finished:
+            # self.model.net.zero_grad()
             curState = self.agent.inputTensor
             action = self.agent.playAction(model=self.model, chanceDoRand=self.chanceofRandMove())
-            reward = torch.tensor(self.agent.piceScore.scorePice(), dtype=torch.float)
+            reward = torch.tensor([self.agent.piceScore.scorePice()])
             nextState = self.agent.getInputTensor()
 
-            if agent.planter.finished:
-                self.replayMemory.push(curState, action, None, reward)
-            else:
-                self.replayMemory.push(curState, action, nextState, reward)
+            self.replayMemory.push(curState, action, nextState, reward, agent.planter.finished)
 
             if doRender:
                 time.sleep(self.renderSleep)
@@ -78,12 +76,12 @@ if __name__ == '__main__':
 
     masterAi = MasterAI(agent=agent,
                         gama=0.9,
-                        lr=0.1,
+                        lr=0.01,
                         epsilon=0.8,
                         nEpochs=1001,
                         batchSize=100,
                         replayMemory=replayMemory,
                         showEvery=1000,
                         printEvery=100,
-                        renderSleep=0.3)
+                        renderSleep=0.01)
     masterAi.trainLoop()

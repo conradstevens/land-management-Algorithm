@@ -8,7 +8,7 @@ class ReplayMemory(object):
     def __init__(self, capacity):
         self.capacity = capacity
         self.memory = deque([], maxlen=capacity)
-        self.transitions = namedtuple('Transition', ('state', 'action', 'nextState', 'reward'))
+        self.transitions = namedtuple('Transition', ('state', 'action', 'nextState', 'reward', 'done'))
 
     def push(self, *args):
         """Save a transition"""

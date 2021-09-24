@@ -22,40 +22,30 @@ class Agent:
 
     def getInputTensor(self):
         """ :return: The input tensor """
-        return torch.FloatTensor(self.getVisionData())
-
-    def getVisionData(self):
-        """
-        Gets what is in the planters vision by:
-            Tile -> [is Plantable, is Walkable]
-        """
         visionData = []
         for v in self.planter.vision.visionCircle:
             nx, ny = v[0], v[1]
             tile = self.planter.getTile(nx=nx, ny=ny, selfRelative=True)
             visionData.append((not tile is None) and tile.isPlantable)
             visionData.append((not tile is None) and tile.isWalkable)
-        return visionData
+
+        return torch.FloatTensor(visionData)
 
     def playAction(self, model: PlantModel, chanceDoRand: float):
-        """ Trains self.model one generation """
-        self.chanceDoRand = chanceDoRand
-        self.model = model
-        move = self.getMove()
-        nx, ny = self._getMoveFromLst(move)
-        self.planter.move(nx, ny, plant=True)
-        return torch.tensor(move, dtype=torch.float)
-
-    def getMove(self):
-        """ :return: returns the move for the planter to make """
+        """ Plays the action and returns the tensor used """
         move = [0, 0, 0, 0]
-        if self._doRand():
+        if self._doRand(chanceDoRand):
             move[random.randint(0, 3)] = 1
+            prediction = torch.tensor(move)
         else:
-            prediction = self.model(self.inputTensor)
+            prediction = model(self.inputTensor)
             dirNum = torch.argmax(prediction).item()
             move[dirNum] = 1
-        return move
+
+        nx, ny = self._getMoveFromLst(move)
+        self.planter.move(nx, ny, plant=True)
+
+        return prediction
 
     def newPice(self, epoch, render=False):
         """ Creates a new pice and places the planter in it"""
@@ -66,8 +56,8 @@ class Agent:
         self.planter = Planter(self.bagSize, self.viewDistance, pice)
         self.piceScore.resetNewPice(epoch, self.planter)
 
-    def _doRand(self):
-        return random.random() < self.chanceDoRand
+    def _doRand(self, chanceDoRand):
+        return random.random() < chanceDoRand
 
     @staticmethod
     def _getMoveFromLst(move):
@@ -81,6 +71,3 @@ class Agent:
             return -1, 0
         else:  # move == [0, 0, 0, 1]:
             return 0, -1
-
-
-

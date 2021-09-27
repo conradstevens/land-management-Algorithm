@@ -29,14 +29,14 @@ class Agent:
             visionData.append((not tile is None) and tile.isPlantable)
             visionData.append((not tile is None) and tile.isWalkable)
 
-        return torch.FloatTensor(visionData)
+        return torch.Tensor(visionData)
 
     def playAction(self, model: PlantModel, chanceDoRand: float):
         """ Plays the action and returns the tensor used """
         move = [0, 0, 0, 0]
         if self._doRand(chanceDoRand):
             move[random.randint(0, 3)] = 1
-            prediction = torch.tensor(move)
+            prediction = torch.tensor(move, dtype=torch.float)
         else:
             prediction = model(self.inputTensor)
             dirNum = torch.argmax(prediction).item()

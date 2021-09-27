@@ -54,7 +54,7 @@ class Qtrainer:
         self.lr, self.gama, self.batchSize = lr, gamma, batchSize
 
     def trainStep(self, model: PlantModel, replayMemory: ReplayMemory):
-        """ Trains the AI Model based on a sample of memories memeories"""
+        """ Trains the AI Model based on a sample of memories memeories """
         tgtModel = PlantModel(model.inputSize, model.hiddenSize, model.outputSize, self.lr)
         tgtModel.load_state_dict(model.state_dict())
 
@@ -65,16 +65,21 @@ class Qtrainer:
         actionBatch = torch.stack([torch.tensor([a.max()]) for a in batch.action])
         nextStateBatch = torch.stack([ns for ns in batch.nextState])
         rewardBatch = torch.stack([r for r in batch.reward])
-        doneMask = torch.stack([torch.tensor(0) if s else torch.tensor(1) for s in batch.done])
+        doneMask = torch.stack([torch.tensor([0]) if s else torch.tensor([1]) for s in batch.done])
 
         with torch.no_grad():
             qValsNext = tgtModel(nextStateBatch)
-        qValsNext = torch.stack([torch.tensor([a.max()]) for a in batch.action])
+            qValsNext = torch.stack([torch.tensor([a.max()]) for a in batch.action])
+
+        actionOneHot = torch.stack([torch.tensor([torch.argmax(a).item()]) for a in batch.action])
+        actionOneHot = F.one_hot(actionOneHot, 4)
 
         model.opt.zero_grad()
-        loss = rewardBatch + qValsNext
+        loss = ((doneMask * (rewardBatch + qValsNext - actionBatch)) * actionOneHot).mean()
+        loss.requres_grad = True
+        loss.backward()
+        model.opt.step()
 
-        print(loss)
 
 
 

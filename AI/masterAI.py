@@ -48,11 +48,16 @@ class MasterAI:
     def playPice(self, doRender):
         """ runs through the pice and updates the Q-table"""
         while not agent.planter.finished:
-            # self.model.net.zero_grad()
+            self.model.net.zero_grad()
             curState = self.agent.inputTensor
             action = self.agent.playAction(model=self.model, chanceDoRand=self.chanceofRandMove())
-            reward = torch.tensor([self.agent.piceScore.scorePice()])
+            reward = torch.tensor([self.agent.piceScore.scorePice()], dtype=torch.float)
             nextState = self.agent.getInputTensor()
+
+            curState.requires_grad_(True)
+            action.requires_grad_(True)
+            nextState.requires_grad_(True)
+            reward.requires_grad_(True)
 
             self.replayMemory.push(curState, action, nextState, reward, agent.planter.finished)
 
@@ -78,10 +83,10 @@ if __name__ == '__main__':
                         gama=0.9,
                         lr=0.01,
                         epsilon=0.8,
-                        nEpochs=1001,
+                        nEpochs=10_001,
                         batchSize=100,
                         replayMemory=replayMemory,
                         showEvery=1000,
                         printEvery=100,
-                        renderSleep=0.01)
+                        renderSleep=0.1)
     masterAi.trainLoop()

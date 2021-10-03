@@ -25,9 +25,10 @@ class Agent:
         visionData = []
         for v in self.planter.vision.visionCircle:
             nx, ny = v[0], v[1]
-            tile = self.planter.getTile(nx=nx, ny=ny, selfRelative=True)
-            visionData.append((not tile is None) and tile.isPlantable)
-            visionData.append((not tile is None) and tile.isWalkable)
+            if (nx, ny) != (0, 0):
+                tile = self.planter.getTile(nx=nx, ny=ny, selfRelative=True)
+                visionData.append((not tile is None) and tile.isPlantable)
+                # visionData.append((not tile is None) and tile.isWalkable)
 
         return torch.Tensor(visionData)
 

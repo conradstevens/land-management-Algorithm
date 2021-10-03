@@ -9,8 +9,12 @@ class Pice:
     def __init__(self, fileName: str):
         self.fileName = fileName
         self.piceMatrix = []
-        self.width, self.height = self.loadPiceMatrix(fileName)
+        self.plantableCount = 0
         self.window = None
+
+        self.width, self.height = self.loadPiceMatrix(fileName)
+
+
 
     def __str__(self):
         for row in self.piceMatrix:
@@ -37,6 +41,8 @@ class Pice:
                 rowWidth += 1
                 tile = Tile(charX, charY, line[charX])
                 matrixLine.append(tile)
+                if tile.isPlantable:
+                    self.plantableCount += 1
 
             self.piceMatrix.append(matrixLine)
             line = pice.readline()

@@ -44,9 +44,10 @@ class Planter:
 
         if plant:
             self.plant()
+            if self.pice.plantableCount == self.plantCount:
+                self.finished = True
         else:
             self.getUderTile().isDead = True
-            self.deadCount += 1
 
     def _updateMoveAndView(self, nx, ny, rememberAllView=False):
         """
@@ -95,6 +96,7 @@ class Planter:
 
         else:
             self.getUderTile().isDead = True
+            self.deadCount += 1
 
     def placePlanter(self):
         """

@@ -47,8 +47,9 @@ class MasterAI:
 
     def playPice(self, doRender):
         """ runs through the pice and updates the Q-table"""
+        # self.agent.piceScore.scorePice()
+        self.model.net.zero_grad()
         while not agent.planter.finished:
-            self.model.net.zero_grad()
             curState = self.agent.inputTensor
             action = self.agent.playAction(model=self.model, chanceDoRand=self.chanceofRandMove())
             reward = torch.tensor([self.agent.piceScore.scorePice()], dtype=torch.float)
@@ -73,7 +74,7 @@ class MasterAI:
 if __name__ == '__main__':
     ''' Current tensor: [is plantable, is walkable] across vision circle'''
 
-    agent = Agent(fileName='C:/Users/conra/Documents/land-management-Algorithm/World/Pices/pice1.txt',
+    agent = Agent(fileName='C:/Users/conra/Documents/land-management-Algorithm/World/Pices/hallTest1.txt',
                   bagSize=400,
                   viwDistance=1)
 

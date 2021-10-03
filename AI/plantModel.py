@@ -81,9 +81,6 @@ class Qtrainer:
         model.opt.step()
 
 
-
-
-
     def _sample(self, model, replayMemory: ReplayMemory):
         if len(replayMemory) < self.batchSize:
             return replayMemory.sample(len(replayMemory))

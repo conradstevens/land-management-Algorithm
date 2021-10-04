@@ -55,6 +55,37 @@ class Qtrainer:
 
     def trainStep(self, model: PlantModel, replayMemory: ReplayMemory):
         """ Trains the AI Model based on a sample of memories memeories """
+        model.opt.zero_grad()
+        policyMod = PlantModel(model.inputSize, model.hiddenSize, model.outputSize, self.lr)
+        policyMod.load_state_dict(model.state_dict())
+
+        transitionSample = self._sample(model, replayMemory)
+        batch = replayMemory.transitions(*zip(*transitionSample))
+
+        stateBatch = torch.stack([s for s in batch.state])
+        actionBatch = torch.stack([torch.tensor([a.max()]) for a in batch.action])
+        nextStateBatch = torch.stack([ns for ns in batch.nextState])
+        rewardBatch = torch.stack([r for r in batch.reward])
+        doneMask = torch.stack([torch.tensor([0]) if s else torch.tensor([1]) for s in batch.done])
+
+        qEval = model.forward(stateBatch)
+
+        # with torch.no_grad():
+        #     qValsNext = policyMod(nextStateBatch)
+        #     qValsNext = torch.stack([torch.tensor([a.max()]) for a in batch.action])
+
+        actionOneHot = torch.stack([torch.tensor(torch.argmax(a).item()) for a in batch.action])
+        actionOneHot = F.one_hot(actionOneHot, 4)
+
+        loss = (qEval * rewardBatch)
+        loss = (loss * actionOneHot)
+        loss = -1 * loss.mean()
+        # loss.requres_grad = True
+        loss.backward()
+        model.opt.step()
+
+    def trainStepOLD(self, model: PlantModel, replayMemory: ReplayMemory):
+        """ Trains the AI Model based on a sample of memories memeories """
         tgtModel = PlantModel(model.inputSize, model.hiddenSize, model.outputSize, self.lr)
         tgtModel.load_state_dict(model.state_dict())
 
@@ -74,9 +105,8 @@ class Qtrainer:
         actionOneHot = torch.stack([torch.tensor([torch.argmax(a).item()]) for a in batch.action])
         actionOneHot = F.one_hot(actionOneHot, 4)
 
-        model.opt.zero_grad()
         loss = ((doneMask * (rewardBatch + qValsNext - actionBatch)) * actionOneHot).mean()
-        loss.requres_grad = True
+        # loss.requres_grad = True
         loss.backward()
         model.opt.step()
 

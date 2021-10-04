@@ -148,7 +148,6 @@ class Planter:
         Determines if move was a dead walk
         """
         if self.pice.piceMatrix[self.y][self.x].isDead:
-            self.deadCount += 1
             return 'red'
         return None
 

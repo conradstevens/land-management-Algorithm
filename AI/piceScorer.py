@@ -31,9 +31,9 @@ class PiceScore:
         self.piceScore = self.planter.plantCount - self.planter.deadCount
         self.scoreDisplay.updateStats(piceScore=self.piceScore)
         self.reward = self.piceScore - self.oldScore
+        self.coveredLand = self.planter.plantCount
 
-        if self.reward == 1:
-            self.coveredLand += 1
+        if self.reward > 1:
             self.scoreDisplay.updateStats(coveredLand=self.coveredLand)
         else:
             self.scoreDisplay.updateStats(deadCount=self.planter.deadCount)
@@ -42,6 +42,8 @@ class PiceScore:
             self.highScore = self.piceScore
             self.scoreDisplay.updateStats(highScore=self.highScore)
 
+        if self.reward > 0:
+            return 0
         return self.reward
 
     def resetNewPice(self, epoch, planter: Planter):
@@ -53,7 +55,6 @@ class PiceScore:
         self.scoreDisplay.updateStats(piceScore=self.piceScore, deadCount=self.planter.deadCount,
                                       coveredLand=self.coveredLand, nGames=self.gameNum,
                                       highScore=max(0, self.highScore))
-
 
 class ScoreDisplay:
     """ Keeps track and displays all the stats of the ai"""

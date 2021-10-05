@@ -51,16 +51,15 @@ class MasterAI:
         while not agent.planter.finished:
             curState = self.agent.inputTensor
             action = self.agent.playAction(model=self.model, chanceDoRand=self.chanceofRandMove())
-            reward = torch.tensor([self.agent.piceScore.scorePice() * 1000000000], dtype=torch.float)
+            reward = torch.tensor([self.agent.piceScore.scorePice() * 1], dtype=torch.float)
             nextState = self.agent.getInputTensor()
 
             curState.requires_grad_(True)
-            action.requires_grad_(True)
-            nextState.requires_grad_(True)
-            reward.requires_grad_(True)
+            # action.requires_grad_(False)
+            # nextState.requires_grad_(False)
+            # reward.requires_grad_(False)
 
             self.replayMemory.push(curState, action, nextState, reward, agent.planter.finished)
-
 
             if doRender:
                 time.sleep(self.renderSleep)
@@ -88,7 +87,7 @@ if __name__ == '__main__':
                         nEpochs=10_001,
                         batchSize=100,
                         replayMemory=replayMemory,
-                        showEvery=100,
+                        showEvery=200,
                         printEvery=100,
-                        renderSleep=0.1)
+                        renderSleep=0.001)
     masterAi.trainLoop()

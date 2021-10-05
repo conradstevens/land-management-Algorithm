@@ -23,9 +23,9 @@ class PlantModel(nn.Module):
 
         self.net = torch.nn.Sequential(
             nn.Linear(inputSize, hiddenSize),
-            nn.ReLU(),
+            nn.Sigmoid(),
             nn.Linear(hiddenSize, outputSize),
-            nn.ReLU()
+            nn.Softmax(dim=-1)
         )
         self.opt = optim.Adam(self.net.parameters(), lr)
 
@@ -69,20 +69,34 @@ class Qtrainer:
         doneMask = torch.stack([torch.tensor([0]) if s else torch.tensor([1]) for s in batch.done])
 
         qEval = model.forward(stateBatch)
+        baseline = torch.stack([torch.tensor([1]) for i in batch.state])
 
         # with torch.no_grad():
         #     qValsNext = policyMod(nextStateBatch)
         #     qValsNext = torch.stack([torch.tensor([a.max()]) for a in batch.action])
 
-        actionOneHot = torch.stack([torch.tensor(torch.argmax(a).item()) for a in batch.action])
-        actionOneHot = F.one_hot(actionOneHot, 4)
+        # actionOneHot = torch.stack([torch.tensor(torch.argmax(a).item()) for a in batch.action])
+        # actionOneHot = F.one_hot(actionOneHot, 4)
 
-        loss = (qEval * rewardBatch)
-        loss = (loss * actionOneHot)
-        loss = -1 * loss.mean()
-        # loss.requres_grad = True
+        loss = torch.sum(torch.log(qEval) * (rewardBatch - baseline))
         loss.backward()
         model.opt.step()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     def trainStepOLD(self, model: PlantModel, replayMemory: ReplayMemory):
         """ Trains the AI Model based on a sample of memories memeories """
@@ -106,7 +120,6 @@ class Qtrainer:
         actionOneHot = F.one_hot(actionOneHot, 4)
 
         loss = ((doneMask * (rewardBatch + qValsNext - actionBatch)) * actionOneHot).mean()
-        # loss.requres_grad = True
         loss.backward()
         model.opt.step()
 

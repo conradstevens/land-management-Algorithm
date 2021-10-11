@@ -45,6 +45,7 @@ class Agent:
 
         nx, ny = self._getMoveFromLst(move)
         self.planter.move(nx, ny, plant=True)
+        self.inputTensor = self.getInputTensor()
 
         return prediction
 

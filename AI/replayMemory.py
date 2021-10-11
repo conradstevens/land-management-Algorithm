@@ -17,5 +17,8 @@ class ReplayMemory(object):
     def sample(self, batch_size):
         return random.sample(self.memory, batch_size)
 
+    def clear(self):
+        self.memory = deque([], maxlen=self.capacity)
+
     def __len__(self):
         return len(self.memory)

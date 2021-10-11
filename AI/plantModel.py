@@ -24,6 +24,8 @@ class PlantModel(nn.Module):
         self.net = torch.nn.Sequential(
             nn.Linear(inputSize, hiddenSize),
             nn.Sigmoid(),
+            nn.Linear(hiddenSize, hiddenSize),
+            nn.Sigmoid(),
             nn.Linear(hiddenSize, outputSize),
             nn.Softmax(dim=-1)
         )
@@ -68,7 +70,7 @@ class Qtrainer:
         rewardBatch = torch.stack([r for r in batch.reward])
         doneMask = torch.stack([torch.tensor([0]) if s else torch.tensor([1]) for s in batch.done])
 
-        qEval = model.forward(stateBatch)
+        qEval = model.forward(stateBatch)  # Gets Gradients
         baseline = torch.stack([torch.tensor([1]) for i in batch.state])
 
         # with torch.no_grad():
@@ -81,8 +83,6 @@ class Qtrainer:
         loss = torch.sum(torch.log(qEval) * (rewardBatch - baseline))
         loss.backward()
         model.opt.step()
-
-
 
 
 

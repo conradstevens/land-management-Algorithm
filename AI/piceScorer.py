@@ -42,8 +42,8 @@ class PiceScore:
             self.highScore = self.piceScore
             self.scoreDisplay.updateStats(highScore=self.highScore)
 
-        # if self.reward > 0:
-        #     return 0
+        if self.reward > 0:
+            return self.reward
         return self.reward
 
     def resetNewPice(self, epoch, planter: Planter):

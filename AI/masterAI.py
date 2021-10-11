@@ -47,7 +47,7 @@ class MasterAI:
 
     def playPice(self, doRender):
         """ runs through the pice and updates the Q-table"""
-        # self.agent.piceScore.scorePice()
+        self.replayMemory.clear()
         while not agent.planter.finished:
             curState = self.agent.inputTensor
             action = self.agent.playAction(model=self.model, chanceDoRand=self.chanceofRandMove())
@@ -74,7 +74,7 @@ class MasterAI:
 if __name__ == '__main__':
     ''' Current tensor: [is plantable, is walkable] across vision circle'''
 
-    agent = Agent(fileName='C:/Users/conra/Documents/land-management-Algorithm/World/Pices/hallTest1.txt',
+    agent = Agent(fileName='C:/Users/conra/Documents/land-management-Algorithm/World/Pices/hallTest2.txt',
                   bagSize=400,
                   viwDistance=1)
 
@@ -84,10 +84,10 @@ if __name__ == '__main__':
                         gama=0.9,
                         lr=0.01,
                         epsilon=0.9999,  # Chance not to make random move
-                        nEpochs=10_001,
+                        nEpochs=100_001,
                         batchSize=100,
                         replayMemory=replayMemory,
-                        showEvery=200,
+                        showEvery=100,
                         printEvery=100,
-                        renderSleep=0.001)
+                        renderSleep=0.01)
     masterAi.trainLoop()

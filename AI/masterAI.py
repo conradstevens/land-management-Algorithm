@@ -48,25 +48,24 @@ class MasterAI:
     def playPice(self, doRender):
         """ runs through the pice and updates the Q-table"""
         self.replayMemory.clear()
-        while not agent.planter.finished:
+        while not agent.planter.finished and self.agent.piceScore.piceScore > -20:
             curState = self.agent.inputTensor
             action = self.agent.playAction(model=self.model, chanceDoRand=self.chanceofRandMove())
             reward = torch.tensor([self.agent.piceScore.scorePice() * 1], dtype=torch.float)
             nextState = self.agent.getInputTensor()
 
-            curState.requires_grad_(True)
+            # curState.requires_grad_(True)
             # action.requires_grad_(False)
             # nextState.requires_grad_(False)
-            # reward.requires_grad_(False)
+            # reward.requires_grad_(True)
 
             self.replayMemory.push(curState, action, nextState, reward, agent.planter.finished)
-
+            a = [t[0] for t in replayMemory.memory]
             if doRender:
                 time.sleep(self.renderSleep)
 
         self.trainer.trainStep(self.model, replayMemory)
         self.agent.planter.pice.terminate()
-
 
     def chanceofRandMove(self):
         return 1 - (self.epsilon + self.agent.piceScore.gameNum * (1 - self.epsilon) / self.nEpochs)
@@ -74,7 +73,7 @@ class MasterAI:
 if __name__ == '__main__':
     ''' Current tensor: [is plantable, is walkable] across vision circle'''
 
-    agent = Agent(fileName='C:/Users/conra/Documents/land-management-Algorithm/World/Pices/hallTest2.txt',
+    agent = Agent(fileName='C:/Users/conra/Documents/land-management-Algorithm/World/Pices/pice1.txt',
                   bagSize=400,
                   viwDistance=1)
 
@@ -89,5 +88,5 @@ if __name__ == '__main__':
                         replayMemory=replayMemory,
                         showEvery=100,
                         printEvery=100,
-                        renderSleep=0.01)
+                        renderSleep=0.005)
     masterAi.trainLoop()

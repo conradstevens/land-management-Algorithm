@@ -57,6 +57,7 @@ class Agent:
             pice = Pice(self.fileName)
         self.planter = Planter(self.bagSize, self.viewDistance, pice)
         self.piceScore.resetNewPice(epoch, self.planter)
+        self.inputTensor = self.getInputTensor()
 
     def _doRand(self, chanceDoRand):
         return random.random() < chanceDoRand
@@ -72,4 +73,4 @@ class Agent:
         if move == [0, 0, 1, 0]:
             return -1, 0
         else:  # move == [0, 0, 0, 1]:
-            return 0, -1
+            return 0, 1

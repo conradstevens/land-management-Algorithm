@@ -24,8 +24,6 @@ class PlantModel(nn.Module):
         self.net = torch.nn.Sequential(
             nn.Linear(inputSize, hiddenSize),
             nn.Sigmoid(),
-            nn.Linear(hiddenSize, hiddenSize),
-            nn.Sigmoid(),
             nn.Linear(hiddenSize, outputSize),
             nn.Softmax(dim=-1)
         )
@@ -55,11 +53,37 @@ class Qtrainer:
     def __init__(self, lr: float, gamma: float, batchSize):
         self.lr, self.gama, self.batchSize = lr, gamma, batchSize
 
-    def trainStep(self, model: PlantModel, replayMemory: ReplayMemory):
+    def trainStepNEW(self, model: PlantModel, replayMemory: ReplayMemory):
         """ Trains the AI Model based on a sample of memories memeories """
         model.opt.zero_grad()
         policyMod = PlantModel(model.inputSize, model.hiddenSize, model.outputSize, self.lr)
         policyMod.load_state_dict(model.state_dict())
+
+        transitionSample = self._sample(model, replayMemory)
+        batch = replayMemory.transitions(*zip(*transitionSample))
+
+        stateBatch = torch.stack([s for s in batch.state])
+        actionBatch = torch.stack([torch.tensor([a.max()]) for a in batch.action])
+        nextStateBatch = torch.stack([ns for ns in batch.nextState])
+        rewardBatch = torch.stack([r for r in batch.reward])
+        doneMask = torch.stack([torch.tensor([0]) if s else torch.tensor([1]) for s in batch.done])
+
+        model.opt.zero_grad()
+        qEval = model.forward(stateBatch)  # Gets Gradients
+        qEval = torch.stack([torch.tensor([a.max()]) for a in qEval])
+
+        qValsNext = model.forward(nextStateBatch)
+        qValsNext = torch.stack([torch.tensor([a.max()]) for a in qValsNext])
+
+        loss = (rewardBatch + qValsNext - qEval)**2
+        loss.backward()
+        model.opt.step()
+
+    def trainStep(self, model: PlantModel, replayMemory: ReplayMemory):
+        """ Trains the AI Model based on a sample of memories memeories """
+        model.opt.zero_grad()
+        # policyMod = PlantModel(model.inputSize, model.hiddenSize, model.outputSize, self.lr)
+        # policyMod.load_state_dict(model.state_dict())
 
         transitionSample = self._sample(model, replayMemory)
         batch = replayMemory.transitions(*zip(*transitionSample))
@@ -83,7 +107,6 @@ class Qtrainer:
         loss = torch.sum(torch.log(qEval) * (rewardBatch - baseline))
         loss.backward()
         model.opt.step()
-
 
 
 

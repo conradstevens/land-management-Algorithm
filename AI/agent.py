@@ -59,8 +59,10 @@ class Agent:
 
         return prediction
 
-    def newPice(self, epoch, render=False):
+    def newPice(self, epoch, fileName=None, render=False):
         """ Creates a new pice and places the planter in it"""
+        if fileName is not None:
+            self.fileName = fileName
         if render:
             pice = PiceWind(self.fileName, 12)
         else:

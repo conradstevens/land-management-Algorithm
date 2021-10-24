@@ -14,8 +14,8 @@ class MasterAI:
     TODO/ Refactor to run different models
     """
 
-    def __init__(self, agent: Agent, gama: float, lr: float, epsilon: float, nEpochs: int, batchSize: int,
-                 replayMemory: ReplayMemory, showEvery: int, printEvery: int, renderSleep: float):
+    def __init__(self, agent: Agent, trainingPices: list, gama: float, lr: float, epsilon: float, nEpochs: int,
+                 batchSize: int, replayMemory: ReplayMemory, showEvery: int, printEvery: int, renderSleep: float):
 
         # Logistical Classes
         self.agent = agent
@@ -24,6 +24,7 @@ class MasterAI:
         self.model = PlantModel(self.agent.inputSize, 32, 4, lr)
         self.trainer = Qtrainer(lr, gama, batchSize)
         self.replayMemory = replayMemory
+        self.trainingPices = trainingPices
 
         # training loop info
         self.epsilon = epsilon
@@ -42,12 +43,14 @@ class MasterAI:
             if doPrint:
                 print('Epoch num: ' + str(epoch))
 
-            self.agent.newPice(epoch, render=doRender)  # create a new pice, every showEvery
-            self.playPice(doRender)
+            for pice in self.trainingPices:
+                self.agent.newPice(epoch, pice, doRender)  # create a new pice, every showEvery
+                self.playPice(doRender)
+
+            self.trainer.trainStep(self.model, replayMemory)
 
     def playPice(self, doRender):
         """ runs through the pice and updates the Q-table"""
-        # self.replayMemory.clear()
         while not agent.planter.finished and self.agent.piceScore.piceScore > -20:
             curState = self.agent.inputTensor
             surround = self.agent.getSurroundingTensor()
@@ -65,7 +68,6 @@ class MasterAI:
             if doRender:
                 time.sleep(self.renderSleep)
 
-        self.trainer.trainStep(self.model, replayMemory)
         self.agent.planter.pice.terminate()
 
     def chanceofRandMove(self):
@@ -74,13 +76,25 @@ class MasterAI:
 if __name__ == '__main__':
     ''' Current tensor: [is plantable, is walkable] across vision circle'''
 
-    agent = Agent(fileName='C:/Users/conra/Documents/land-management-Algorithm/World/Pices/pice1.txt',
+    trainingPices = ['C:/Users/conra/Documents/land-management-Algorithm/World/Pices/Train1.txt',
+                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/Train2.txt',
+                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/Train3.txt',
+                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/Train4.txt',
+                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/Train5.txt',
+                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/Train6.txt',
+                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/Train7.txt',
+                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/Train8.txt',
+                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/Train9.txt',
+                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/Train10.txt']
+
+    agent = Agent(fileName=trainingPices[0],  # Place holder function
                   bagSize=400,
                   viwDistance=3)
 
     replayMemory = ReplayMemory(capacity=100_000)
 
     masterAi = MasterAI(agent=agent,
+                        trainingPices=trainingPices,
                         gama=0.9,
                         lr=0.01,
                         epsilon=0.9999999999,  # Chance not to make random move

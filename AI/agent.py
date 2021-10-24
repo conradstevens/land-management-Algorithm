@@ -32,6 +32,16 @@ class Agent:
 
         return torch.Tensor(visionData)
 
+    def getSurroundingTensor(self):
+        """ :return: The input tensor """
+        suround = []
+        for v in [(1, 0), (0, -1), (-1, 0), (0, 1)]:
+            nx, ny = v[0], v[1]
+            tile = self.planter.getTile(nx=nx, ny=ny, selfRelative=True)
+            suround.append((not tile is None) and tile.isPlantable)
+
+        return torch.Tensor(suround)
+
     def playAction(self, model: PlantModel, chanceDoRand: float):
         """ Plays the action and returns the tensor used """
         move = [0, 0, 0, 0]
@@ -64,13 +74,13 @@ class Agent:
 
     @staticmethod
     def _getMoveFromLst(move):
-        if move == [0, 0, 0, 0]:
+        if move == [0, 0, 0, 0]:  # No Move
             return 0, 0
-        if move == [1, 0, 0, 0]:
+        if move == [1, 0, 0, 0]:  # Right
             return 1, 0
-        if move == [0, 1, 0, 0]:
+        if move == [0, 1, 0, 0]:  # Up
             return 0, -1
-        if move == [0, 0, 1, 0]:
+        if move == [0, 0, 1, 0]:  # Left
             return -1, 0
-        else:  # move == [0, 0, 0, 1]:
+        else:  # move == [0, 0, 0, 1]:  # Down
             return 0, 1

@@ -47,20 +47,21 @@ class MasterAI:
 
     def playPice(self, doRender):
         """ runs through the pice and updates the Q-table"""
-        self.replayMemory.clear()
+        # self.replayMemory.clear()
         while not agent.planter.finished and self.agent.piceScore.piceScore > -20:
             curState = self.agent.inputTensor
+            surround = self.agent.getSurroundingTensor()
             action = self.agent.playAction(model=self.model, chanceDoRand=self.chanceofRandMove())
-            reward = torch.tensor([self.agent.piceScore.scorePice() * 1], dtype=torch.float)
+            reward = torch.tensor([self.agent.piceScore.scorePice()], dtype=torch.float)
             nextState = self.agent.getInputTensor()
+            move = torch.tensor([action.argmax().item()])
 
             # curState.requires_grad_(True)
             # action.requires_grad_(False)
             # nextState.requires_grad_(False)
             # reward.requires_grad_(True)
 
-            self.replayMemory.push(curState, action, nextState, reward, agent.planter.finished)
-            a = [t[0] for t in replayMemory.memory]
+            self.replayMemory.push(curState, surround, action, nextState, reward, move, agent.planter.finished)
             if doRender:
                 time.sleep(self.renderSleep)
 
@@ -75,18 +76,19 @@ if __name__ == '__main__':
 
     agent = Agent(fileName='C:/Users/conra/Documents/land-management-Algorithm/World/Pices/pice1.txt',
                   bagSize=400,
-                  viwDistance=1)
+                  viwDistance=3)
 
     replayMemory = ReplayMemory(capacity=100_000)
 
     masterAi = MasterAI(agent=agent,
                         gama=0.9,
                         lr=0.01,
-                        epsilon=0.9999,  # Chance not to make random move
+                        epsilon=0.9999999999,  # Chance not to make random move
                         nEpochs=100_001,
                         batchSize=100,
                         replayMemory=replayMemory,
-                        showEvery=100,
+                        showEvery=500,
                         printEvery=100,
                         renderSleep=0.005)
+
     masterAi.trainLoop()

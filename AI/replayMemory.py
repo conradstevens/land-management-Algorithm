@@ -1,5 +1,6 @@
 from collections import namedtuple, deque
 import random
+import torch
 
 
 class ReplayMemory(object):
@@ -8,11 +9,12 @@ class ReplayMemory(object):
     def __init__(self, capacity):
         self.capacity = capacity
         self.memory = deque([], maxlen=capacity)
-        self.transitions = namedtuple('Transition', ('state', 'action', 'nextState', 'reward', 'done'))
+        self.transitions = namedtuple('Transition', ('state', 'surround', 'action',
+                                                     'nextState', 'reward', 'move', 'done'))
 
-    def push(self, *args):
+    def push(self, curState, surround, action, nextState, reward, move, finished):
         """Save a transition"""
-        self.memory.append(self.transitions(*args))
+        self.memory.append(self.transitions(curState, surround, action, nextState, reward, move, finished))
 
     def sample(self, batch_size):
         return random.sample(self.memory, batch_size)
@@ -22,3 +24,4 @@ class ReplayMemory(object):
 
     def __len__(self):
         return len(self.memory)
+

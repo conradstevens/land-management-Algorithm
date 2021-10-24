@@ -10,6 +10,7 @@ class Vision:
         """
         self.rad = rad
         self.getVisionCircle()
+        self.surroundings = [(0, 1), (0, -1), (1, 0), (-1, 0)]
 
     def getVisionCircle(self):
         """
@@ -27,7 +28,6 @@ class Vision:
                 addToListIfNotIn(self.visionCircle, [-x, -yi])
                 addToListIfNotIn(self.visionCircle, [-x, yi])
                 addToListIfNotIn(self.visionCircle, [x, -yi])
-
 
 def addToListIfNotIn(l: list, elm):
     """

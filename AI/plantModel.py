@@ -53,33 +53,29 @@ class Qtrainer:
     def __init__(self, lr: float, gamma: float, batchSize):
         self.lr, self.gama, self.batchSize = lr, gamma, batchSize
 
-    def trainStepNEW(self, model: PlantModel, replayMemory: ReplayMemory):
+    def trainStep(self, model: PlantModel, replayMemory: ReplayMemory):
         """ Trains the AI Model based on a sample of memories memeories """
         model.opt.zero_grad()
-        policyMod = PlantModel(model.inputSize, model.hiddenSize, model.outputSize, self.lr)
-        policyMod.load_state_dict(model.state_dict())
 
         transitionSample = self._sample(model, replayMemory)
         batch = replayMemory.transitions(*zip(*transitionSample))
 
         stateBatch = torch.stack([s for s in batch.state])
-        actionBatch = torch.stack([torch.tensor([a.max()]) for a in batch.action])
-        nextStateBatch = torch.stack([ns for ns in batch.nextState])
-        rewardBatch = torch.stack([r for r in batch.reward])
+        surroundBatch = torch.stack([s for s in batch.surround])
         doneMask = torch.stack([torch.tensor([0]) if s else torch.tensor([1]) for s in batch.done])
 
-        model.opt.zero_grad()
         qEval = model.forward(stateBatch)  # Gets Gradients
-        qEval = torch.stack([torch.tensor([a.max()]) for a in qEval])
+        baseline = torch.stack([torch.tensor([1]) for i in batch.state])
 
-        qValsNext = model.forward(nextStateBatch)
-        qValsNext = torch.stack([torch.tensor([a.max()]) for a in qValsNext])
+        evalMoves = torch.stack([torch.tensor([qval.argmax().item()]) for qval in qEval])
+        rewards = torch.stack([torch.tensor([self._getReward(surroundBatch[i], evalMoves[i])])
+                               for i in range(0, len(evalMoves))])
 
-        loss = (rewardBatch + qValsNext - qEval)**2
+        loss = torch.sum(torch.log(qEval) * doneMask * (rewards - baseline))
         loss.backward()
         model.opt.step()
 
-    def trainStep(self, model: PlantModel, replayMemory: ReplayMemory):
+    def trainStep_WORKIKNG(self, model: PlantModel, replayMemory: ReplayMemory):
         """ Trains the AI Model based on a sample of memories memeories """
         model.opt.zero_grad()
         # policyMod = PlantModel(model.inputSize, model.hiddenSize, model.outputSize, self.lr)
@@ -107,18 +103,6 @@ class Qtrainer:
         loss = torch.sum(torch.log(qEval) * (rewardBatch - baseline))
         loss.backward()
         model.opt.step()
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     def trainStepOLD(self, model: PlantModel, replayMemory: ReplayMemory):
@@ -151,4 +135,8 @@ class Qtrainer:
         if len(replayMemory) < self.batchSize:
             return replayMemory.sample(len(replayMemory))
         return replayMemory.sample(self.batchSize)
+
+    def _getReward(self, surroundings, move):
+        """ Returns is the move was profitable"""
+        return surroundings[move.item()]
 

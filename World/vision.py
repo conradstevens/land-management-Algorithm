@@ -29,6 +29,7 @@ class Vision:
                 addToListIfNotIn(self.visionCircle, [-x, yi])
                 addToListIfNotIn(self.visionCircle, [x, -yi])
 
+
 def addToListIfNotIn(l: list, elm):
     """
     Adds element to list if not in the list already

@@ -22,6 +22,8 @@ class PiceScore:
         # Multi Game Scores
         self.highScore = 0
         self.gameNum = 0
+        # Consecutive
+        self.downStreak = 0
 
     def scorePice(self):
         """
@@ -33,17 +35,18 @@ class PiceScore:
         self.reward = self.piceScore - self.oldScore
         self.coveredLand = self.planter.plantCount
 
-        if self.reward > 1:
+        if self.reward >= 1:
             self.scoreDisplay.updateStats(coveredLand=self.coveredLand)
+            self.downStreak = 0
+
         else:
             self.scoreDisplay.updateStats(deadCount=self.planter.deadCount)
+            self.downStreak += -1
 
         if self.piceScore > self.highScore:
             self.highScore = self.piceScore
             self.scoreDisplay.updateStats(highScore=self.highScore)
 
-        if self.reward > 0:
-            return self.reward
         return self.reward
 
     def resetNewPice(self, epoch, planter: Planter):

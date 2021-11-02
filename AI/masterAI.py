@@ -2,6 +2,7 @@ from AI.agent import Agent
 from AI.plantModel import PlantModel
 from AI.plantModel import Qtrainer
 from AI.replayMemory import ReplayMemory
+from World.vision import Vision
 import torch
 import time
 
@@ -14,14 +15,15 @@ class MasterAI:
     TODO/ Refactor to run different models
     """
 
-    def __init__(self, agent: Agent, trainingPices: list, gama: float, lr: float, epsilon: float, nEpochs: int,
-                 batchSize: int, replayMemory: ReplayMemory, showEvery: int, printEvery: int, renderSleep: float):
+    def __init__(self, agent: Agent, trainingPices: list, hiddenSize1: int, gama: float, lr: float, epsilon: float, nEpochs: int,
+                 batchSize: int, replayMemory: ReplayMemory, showEvery: int, printEvery: int, renderSleep: float,
+                 modelName: str):
 
         # Logistical Classes
         self.agent = agent
 
         # Trainer
-        self.model = PlantModel(self.agent.inputSize, 32, 4, lr)
+        self.model = PlantModel(self.agent.inputSize, hiddenSize1, 4, lr)
         self.trainer = Qtrainer(lr, gama, batchSize)
         self.replayMemory = replayMemory
         self.trainingPices = trainingPices
@@ -34,6 +36,10 @@ class MasterAI:
         self.printEvery = printEvery
         self.renderSleep = renderSleep
 
+        # Save info
+        self.hiddenSize1 = hiddenSize1
+        self.modelName = (modelName + '_Is_' + str(self.agent.inputSize) + '_Hs_' + str(self.hiddenSize1))
+
     def trainLoop(self):
         """ The loop that trains the AI """
         for epoch in range(0, self.nEpochs):
@@ -42,12 +48,18 @@ class MasterAI:
 
             if doPrint:
                 print('Epoch num: ' + str(epoch))
+                if self.modelName is not None:
+                    torch.save(self.model,
+                               "C:/Users/conra/Documents/land-management-Algorithm/AI/Models/" + self.modelName)
 
             for pice in self.trainingPices:
                 self.agent.newPice(epoch, pice, doRender)  # create a new pice, every showEvery
                 self.playPice(doRender)
 
             self.trainer.trainStep(self.model, replayMemory)
+
+        if self.modelName is not None:
+            torch.save(self.model, "C:/Users/conra/Documents/land-management-Algorithm/AI/Models/" + self.modelName)
 
     def playPice(self, doRender):
         """ runs through the pice and updates the Q-table"""
@@ -73,6 +85,7 @@ class MasterAI:
     def chanceofRandMove(self):
         return 1 - (self.epsilon + self.agent.piceScore.gameNum * (1 - self.epsilon) / self.nEpochs)
 
+
 if __name__ == '__main__':
     ''' Current tensor: [is plantable, is walkable] across vision circle'''
 
@@ -91,18 +104,22 @@ if __name__ == '__main__':
                   bagSize=400,
                   viwDistance=3)
 
+    inputSize = len(Vision(agent.viewDistance).visionCircle) - 1
+
     replayMemory = ReplayMemory(capacity=100_000)
 
     masterAi = MasterAI(agent=agent,
                         trainingPices=trainingPices,
+                        hiddenSize1=32,
                         gama=0.9,
                         lr=0.01,
-                        epsilon=0.9999999999,  # Chance not to make random move
-                        nEpochs=100_001,
-                        batchSize=100,
+                        epsilon=0.9999999999999,  # Chance not to make random move
+                        nEpochs=10_000,
+                        batchSize=500,
                         replayMemory=replayMemory,
-                        showEvery=500,
+                        showEvery=10_000,
                         printEvery=100,
-                        renderSleep=0.005)
+                        renderSleep=0.000,
+                        modelName="Model1")
 
     masterAi.trainLoop()

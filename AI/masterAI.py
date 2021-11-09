@@ -3,6 +3,7 @@ from AI.plantModel import PlantModel
 from AI.plantModel import Qtrainer
 from AI.replayMemory import ReplayMemory
 from World.vision import Vision
+import matplotlib.pyplot as plt
 import torch
 import time
 
@@ -28,7 +29,7 @@ class MasterAI:
         self.replayMemory = replayMemory
         self.trainingPices = trainingPices
 
-        # training loop info
+        # Training loop info
         self.epsilon = epsilon
         self.nEpochs = nEpochs
         self.batchSize = batchSize
@@ -36,9 +37,22 @@ class MasterAI:
         self.printEvery = printEvery
         self.renderSleep = renderSleep
 
+        # Progress Tracker
+        self.scores = []
+
+
         # Save info
         self.hiddenSize1 = hiddenSize1
         self.modelName = (modelName + '_Is_' + str(self.agent.inputSize) + '_Hs_' + str(self.hiddenSize1))
+
+    def runAi(self):
+        """ runs the AI, track progress and saves the model"""
+        self.trainLoop()
+        self.saveModel()
+        plt.plot(self.scores)
+        plt.show()
+        print("pass")
+
 
     def trainLoop(self):
         """ The loop that trains the AI """
@@ -48,9 +62,6 @@ class MasterAI:
 
             if doPrint:
                 print('Epoch num: ' + str(epoch))
-                if self.modelName is not None:
-                    torch.save(self.model,
-                               "C:/Users/conra/Documents/land-management-Algorithm/AI/Models/" + self.modelName)
 
             for pice in self.trainingPices:
                 self.agent.newPice(epoch, pice, doRender)  # create a new pice, every showEvery
@@ -58,12 +69,9 @@ class MasterAI:
 
             self.trainer.trainStep(self.model, replayMemory)
 
-        if self.modelName is not None:
-            torch.save(self.model, "C:/Users/conra/Documents/land-management-Algorithm/AI/Models/" + self.modelName)
-
     def playPice(self, doRender):
         """ runs through the pice and updates the Q-table"""
-        while not agent.planter.finished and self.agent.piceScore.piceScore > -20:
+        while not agent.planter.finished and agent.piceScore.downStreak < 10:
             curState = self.agent.inputTensor
             surround = self.agent.getSurroundingTensor()
             action = self.agent.playAction(model=self.model, chanceDoRand=self.chanceofRandMove())
@@ -71,19 +79,23 @@ class MasterAI:
             nextState = self.agent.getInputTensor()
             move = torch.tensor([action.argmax().item()])
 
-            # curState.requires_grad_(True)
-            # action.requires_grad_(False)
-            # nextState.requires_grad_(False)
-            # reward.requires_grad_(True)
-
             self.replayMemory.push(curState, surround, action, nextState, reward, move, agent.planter.finished)
             if doRender:
                 time.sleep(self.renderSleep)
 
+        self.scores.append(self.agent.piceScore.piceScore)
         self.agent.planter.pice.terminate()
 
+
     def chanceofRandMove(self):
+        """ Chance of doing a random move """
         return 1 - (self.epsilon + self.agent.piceScore.gameNum * (1 - self.epsilon) / self.nEpochs)
+
+    def saveModel(self):
+        """ Saves the model """
+        if self.modelName is not None:
+            torch.save(self.model,
+                       "C:/Users/conra/Documents/land-management-Algorithm/AI/Models/" + self.modelName)
 
 
 if __name__ == '__main__':
@@ -102,7 +114,7 @@ if __name__ == '__main__':
 
     agent = Agent(fileName=trainingPices[0],  # Place holder function
                   bagSize=400,
-                  viwDistance=3)
+                  viwDistance=1)
 
     inputSize = len(Vision(agent.viewDistance).visionCircle) - 1
 
@@ -114,12 +126,13 @@ if __name__ == '__main__':
                         gama=0.9,
                         lr=0.01,
                         epsilon=0.9999999999999,  # Chance not to make random move
-                        nEpochs=10_000,
+                        nEpochs=1_000,
                         batchSize=500,
                         replayMemory=replayMemory,
-                        showEvery=10_000,
+                        showEvery=1_000,
                         printEvery=100,
                         renderSleep=0.000,
                         modelName="Model1")
 
-    masterAi.trainLoop()
+    masterAi.runAi()
+

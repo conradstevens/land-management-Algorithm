@@ -90,7 +90,7 @@ class Planter:
         if self.getUderTile().isPlantable and self.bagCount > 0:
             self.bagCount -= 1
             self.plantCount += 1
-            self.getUderTile().char = 'T'
+            self.getUderTile().char = '■' # █
             self.getUderTile().isPlantable = False
             self.getUderTile().isPlanted = True
 

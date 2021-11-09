@@ -55,6 +55,8 @@ class Windw:
         """
         if ch == 'T':
             return 'green2'
+        if ch == '■':
+            return 'green2'
         if ch == 'D':
             return 'red'
         if ch == 'C':

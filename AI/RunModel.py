@@ -13,7 +13,7 @@ def loadModel(modeldir: str):
 def playPice(model: PlantModel, agent: Agent, pice: str):
     """ Play all the pices in the cue"""
     agent.newPice(1, pice, True)
-    while not agent.planter.finished and agent.piceScore.downStreak > -10:
+    while not agent.planter.finished and agent.piceScore.downStreak < 10:
         agent.playAction(model=model, chanceDoRand=0)
         agent.piceScore.scorePice()
         time.sleep(0.01)

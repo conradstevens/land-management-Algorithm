@@ -14,8 +14,6 @@ class Pice:
 
         self.width, self.height = self.loadPiceMatrix(fileName)
 
-
-
     def __str__(self):
         for row in self.piceMatrix:
             for char in row:

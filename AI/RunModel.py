@@ -15,13 +15,13 @@ def playPice(model: PlantModel, agent: Agent, pice: str):
     agent.newPice(1, pice, True)
     while not agent.planter.finished and agent.piceScore.downStreak < 10:
         agent.playAction(model=model, chanceDoRand=0)
-        agent.piceScore.scorePice()
+        agent.piceScore.scoreMove()
         time.sleep(0.01)
     agent.planter.pice.terminate()
 
 
 if __name__ == '__main__':
-    model = loadModel(modeldir='C:/Users/conra/Documents/land-management-Algorithm/AI/Models/Model1_Is_28_Hs_64')
+    model = loadModel(modeldir='C:/Users/conra/Documents/land-management-Algorithm/AI/Models/Model1_Is_4_Hs_32')
 
     piceCue = ['C:/Users/conra/Documents/land-management-Algorithm/World/Pices/Train1.txt',
                'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/Train2.txt',
@@ -36,7 +36,7 @@ if __name__ == '__main__':
 
     agent = Agent(fileName=piceCue[0],  # Place holder function
                   bagSize=400,
-                  viwDistance=3)
+                  viwDistance=1)
 
     for pice in piceCue:
         playPice(model, agent, pice)

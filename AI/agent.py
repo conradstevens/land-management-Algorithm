@@ -10,15 +10,14 @@ from AI.piceScorer import PiceScore
 class Agent:
     """ Gets Planter information and creates AI tensors to be processed """
 
-    def __init__(self, fileName, bagSize, viwDistance):
+    def __init__(self, planter, piceScore):
         # Pice Logistics
-        self.fileName, self.bagSize, self.viewDistance = fileName, bagSize, viwDistance
-        self.planter = Planter(bagSize=self.bagSize, viwDistance=self.viewDistance, pice=Pice(self.fileName))
+        self.planter = planter
+        self.piceScore = piceScore
 
         # Ai Mechanics
         self.inputTensor = self.getInputTensor()
         self.inputSize = len(self.inputTensor)
-        self.piceScore = PiceScore(self.planter)
 
     def getInputTensor(self):
         """ :return: The input tensor """
@@ -61,13 +60,11 @@ class Agent:
 
     def newPice(self, epoch, fileName=None, render=False):
         """ Creates a new pice and places the planter in it"""
-        if fileName is not None:
-            self.fileName = fileName
         if render:
-            pice = PiceWind(self.fileName, 12)
+            pice = PiceWind(fileName, 12)
         else:
-            pice = Pice(self.fileName)
-        self.planter = Planter(self.bagSize, self.viewDistance, pice)
+            pice = Pice(fileName)
+        self.planter = Planter(self.planter.bagSize, self.planter.viewDistance, pice)
         self.piceScore.resetNewPice(epoch, self.planter)
         self.inputTensor = self.getInputTensor()
 

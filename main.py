@@ -31,7 +31,7 @@ def runManualAlgo(fileName: str, bagSize: int, viewDistance: int, stepTime: floa
     # pice = Pice(fileName)         # Comment for WINDOW run
 
     # Set PlanterClasses Parameters
-    planter = Planter(bagSize=bagSize, viwDistance=viewDistance, pice=pice)
+    planter = Planter(bagSize=bagSize, viewDistance=viewDistance, pice=pice)
     algo = Algo(planter)
 
     # Planting Loop

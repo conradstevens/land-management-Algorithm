@@ -2,7 +2,9 @@ from AI.agent import Agent
 from AI.plantModel import PlantModel
 from AI.plantModel import Qtrainer
 from AI.replayMemory import ReplayMemory
-from World.vision import Vision
+from AI.piceScorer import *
+from World.planterMain import Planter
+from World.pice import Pice
 import matplotlib.pyplot as plt
 import torch
 import time
@@ -39,7 +41,7 @@ class MasterAI:
 
         # Progress Tracker
         self.scores = []
-
+        self.setScoreCount = 0
 
         # Save info
         self.hiddenSize1 = hiddenSize1
@@ -52,7 +54,6 @@ class MasterAI:
         plt.plot(self.scores)
         plt.show()
         print("pass")
-
 
     def trainLoop(self):
         """ The loop that trains the AI """
@@ -67,7 +68,9 @@ class MasterAI:
                 self.agent.newPice(epoch, pice, doRender)  # create a new pice, every showEvery
                 self.playPice(doRender)
 
-            self.trainer.trainStep(self.model, replayMemory)
+            self.scores.append(self.setScoreCount)
+            self.setScoreCount = 0
+            self.trainer.trainStep(self.model, self.replayMemory)
 
     def playPice(self, doRender):
         """ runs through the pice and updates the Q-table"""
@@ -75,7 +78,7 @@ class MasterAI:
             curState = self.agent.inputTensor
             surround = self.agent.getSurroundingTensor()
             action = self.agent.playAction(model=self.model, chanceDoRand=self.chanceofRandMove())
-            reward = torch.tensor([self.agent.piceScore.scorePice()], dtype=torch.float)
+            reward = torch.tensor([self.agent.piceScore.scoreMove()], dtype=torch.float)
             nextState = self.agent.getInputTensor()
             move = torch.tensor([action.argmax().item()])
 
@@ -83,9 +86,8 @@ class MasterAI:
             if doRender:
                 time.sleep(self.renderSleep)
 
-        self.scores.append(self.agent.piceScore.piceScore)
+        self.setScoreCount += self.agent.piceScore.piceScore
         self.agent.planter.pice.terminate()
-
 
     def chanceofRandMove(self):
         """ Chance of doing a random move """
@@ -112,24 +114,23 @@ if __name__ == '__main__':
                      'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/Train9.txt',
                      'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/Train10.txt']
 
-    agent = Agent(fileName=trainingPices[0],  # Place holder function
-                  bagSize=400,
-                  viwDistance=1)
+    planter = Planter(bagSize=400,
+                      viewDistance=1,
+                      pice=Pice(trainingPices[0]))
 
-    inputSize = len(Vision(agent.viewDistance).visionCircle) - 1
+    score = DeadPlantScore(planter)
 
-    replayMemory = ReplayMemory(capacity=100_000)
-
+    agent = Agent(planter, score)
     masterAi = MasterAI(agent=agent,
                         trainingPices=trainingPices,
                         hiddenSize1=32,
                         gama=0.9,
                         lr=0.01,
                         epsilon=0.9999999999999,  # Chance not to make random move
-                        nEpochs=1_000,
+                        nEpochs=10000,
                         batchSize=500,
-                        replayMemory=replayMemory,
-                        showEvery=1_000,
+                        replayMemory=ReplayMemory(capacity=100_000),
+                        showEvery=200,
                         printEvery=100,
                         renderSleep=0.000,
                         modelName="Model1")

@@ -7,11 +7,12 @@ from World.vision import Vision
 
 
 class Planter:
-    def __init__(self, bagSize: int, viwDistance: int, pice: Pice):
+    def __init__(self, bagSize: int, viewDistance: int, pice: Pice):
         """
         PlanterClasses must be assigned a pice. this is done in the pice class
         """
-        self.vision = Vision(viwDistance)
+        self.vision = Vision(viewDistance)
+        self.viewDistance = viewDistance
         self.pice = pice
         self.bagSize, self.bagCount = bagSize, bagSize
         self.x, self.y = 0, 0

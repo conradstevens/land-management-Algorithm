@@ -25,7 +25,24 @@ class PiceScore:
         # Consecutive
         self.downStreak = 0
 
-    def scorePice(self):
+    def resetNewPice(self, epoch, planter: Planter):
+        """ Resets the game scores """
+        self.planter = planter
+        self.scoreDisplay.window = planter.pice.window
+        self.piceScore, self.reward, self.coveredLand = 0, 0, 0
+        self.gameNum = epoch
+        self.downStreak = 0
+        self.scoreDisplay.updateStats(piceScore=self.piceScore, deadCount=self.planter.deadCount,
+                                      coveredLand=self.coveredLand, nGames=self.gameNum,
+                                      highScore=max(0, self.highScore))
+
+
+class DeadPlantScore(PiceScore):
+    """ Simple scoring method that scores each move independantly """
+    def __init__(self, planter):
+        super().__init__(planter)
+
+    def scoreMove(self):
         """
         :return: score of the pice
         """
@@ -49,16 +66,8 @@ class PiceScore:
 
         return self.reward
 
-    def resetNewPice(self, epoch, planter: Planter):
-        """ Resets the game scores """
-        self.planter = planter
-        self.scoreDisplay.window = planter.pice.window
-        self.piceScore, self.reward, self.coveredLand = 0, 0, 0
-        self.gameNum = epoch
-        self.downStreak = 0
-        self.scoreDisplay.updateStats(piceScore=self.piceScore, deadCount=self.planter.deadCount,
-                                      coveredLand=self.coveredLand, nGames=self.gameNum,
-                                      highScore=max(0, self.highScore))
+
+
 
 class ScoreDisplay:
     """ Keeps track and displays all the stats of the ai"""

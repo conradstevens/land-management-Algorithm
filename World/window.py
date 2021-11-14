@@ -53,6 +53,8 @@ class Windw:
         :param ch:
         :return: str
         """
+        if ch == '-':
+            return 'pink3'
         if ch == 'T':
             return 'green2'
         if ch == '■':

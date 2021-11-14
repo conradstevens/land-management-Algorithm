@@ -109,6 +109,7 @@ class Tile:
     isPlanted = False
     isDead = False
     isWalkable = True
+    isRoad = False
 
     def __init__(self, x, y, char):
         self.x, self.y, = x, y
@@ -116,5 +117,9 @@ class Tile:
 
         if char == '.':
             self.isPlantable = True
-        elif char == 'X':
+        if char == 'X':
             self.isWalkable = False
+        if char == '-':
+            self.isWalkable = True
+            self.isRoad = True
+            self.isPlantable = False

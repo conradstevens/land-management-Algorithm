@@ -108,7 +108,7 @@ class MasterAI:
 if __name__ == '__main__':
     ''' Current tensor: [is plantable, is walkable] across vision circle'''
 
-    trainingPices = ['C:/Users/conra/Documents/land-management-Algorithm/World/Pices/smallTrain3/Train7.txt']
+    trainingPices = ['C:/Users/conra/Documents/land-management-Algorithm/World/Pices/smallTrain3/Train0.txt']
 
     planter = Planter(bagSize=400,
                       viewDistance=1,

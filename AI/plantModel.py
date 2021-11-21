@@ -105,14 +105,13 @@ class PiceTrainer(Trainer):
         stateBatch = torch.stack([i.state for i in replayMemory.memory])  # Gets a stack of states
         qEval = model.forward(stateBatch)  # Evaluates the nn's moves for each state
 
-        loss = torch.sum(torch.log(qEval) * score)
-
-        loss = torch.tensor(float(score), requires_grad=True)
+        loss = torch.sum(torch.log(qEval) * -score)
         loss.backward()
-        model.opt.step()
 
-        model.opt.zero_grad()
+        model.opt.step()
         replayMemory.clearMoveData()
+        print(loss)
+
 
 
 

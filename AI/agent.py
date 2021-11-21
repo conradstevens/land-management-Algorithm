@@ -53,6 +53,7 @@ class Agent:
             move[dirNum] = 1
 
         nx, ny = self._getMoveFromLst(move)
+        # print(str(self.planter.x + nx) + " - " + str(self.planter.y + ny))
         self.planter.move(nx, ny, plant=True)
         self.inputTensor = self.getInputTensor()
 

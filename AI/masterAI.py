@@ -1,13 +1,15 @@
 from AI.agent import Agent
-from AI.plantModel import PlantModel
-from AI.plantModel import Qtrainer
+from AI.plantModel import *
+from AI.plantModel import *
 from AI.replayMemory import ReplayMemory
 from AI.piceScorer import *
 from World.planterMain import Planter
 from World.pice import Pice
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import torch
 import time
+
+import numpy as np
 
 
 class MasterAI:
@@ -18,23 +20,21 @@ class MasterAI:
     TODO/ Refactor to run different models
     """
 
-    def __init__(self, agent: Agent, trainingPices: list, hiddenSize1: int, gama: float, lr: float, epsilon: float, nEpochs: int,
-                 batchSize: int, replayMemory: ReplayMemory, showEvery: int, printEvery: int, renderSleep: float,
-                 modelName: str):
+    def __init__(self, agent: Agent, trainer, trainingPices: list, hiddenSize1: int, lr: float, epsilon: float, nEpochs: int,
+                 replayMemory: ReplayMemory, showEvery: int, printEvery: int, renderSleep: float, modelName: str):
 
         # Logistical Classes
         self.agent = agent
 
         # Trainer
         self.model = PlantModel(self.agent.inputSize, hiddenSize1, 4, lr)
-        self.trainer = Qtrainer(lr, gama, batchSize)
+        self.trainer = trainer
         self.replayMemory = replayMemory
         self.trainingPices = trainingPices
 
         # Training loop info
         self.epsilon = epsilon
         self.nEpochs = nEpochs
-        self.batchSize = batchSize
         self.showEvery = showEvery
         self.printEvery = printEvery
         self.renderSleep = renderSleep
@@ -42,6 +42,7 @@ class MasterAI:
         # Progress Tracker
         self.scores = []
         self.setScoreCount = 0
+        self.genDeadCount = 0
 
         # Save info
         self.hiddenSize1 = hiddenSize1
@@ -51,8 +52,7 @@ class MasterAI:
         """ runs the AI, track progress and saves the model"""
         self.trainLoop()
         self.saveModel()
-        plt.plot(self.scores)
-        plt.show()
+
         print("pass")
 
     def trainLoop(self):
@@ -65,12 +65,15 @@ class MasterAI:
                 print('Epoch num: ' + str(epoch))
 
             for pice in self.trainingPices:
+                # print(pice)
                 self.agent.newPice(epoch, pice, doRender)  # create a new pice, every showEvery
                 self.playPice(doRender)
 
             self.scores.append(self.setScoreCount)
+            self.trainer.trainStep(self.model, self.replayMemory, self.genDeadCount)
             self.setScoreCount = 0
-            self.trainer.trainStep(self.model, self.replayMemory)
+            self.genDeadCount = 0
+            self.replayMemory.piceScore = 0
 
     def playPice(self, doRender):
         """ runs through the pice and updates the Q-table"""
@@ -82,11 +85,13 @@ class MasterAI:
             nextState = self.agent.getInputTensor()
             move = torch.tensor([action.argmax().item()])
 
-            self.replayMemory.push(curState, surround, action, nextState, reward, move, agent.planter.finished)
+            self.replayMemory.moveDataPush(curState, surround, action, nextState, reward, move, agent.planter.finished)
             if doRender:
                 time.sleep(self.renderSleep)
 
         self.setScoreCount += self.agent.piceScore.piceScore
+        self.genDeadCount += self.agent.piceScore.deadCount
+        self.replayMemory.piceScore += self.agent.piceScore.piceScore
         self.agent.planter.pice.terminate()
 
     def chanceofRandMove(self):
@@ -103,16 +108,7 @@ class MasterAI:
 if __name__ == '__main__':
     ''' Current tensor: [is plantable, is walkable] across vision circle'''
 
-    trainingPices = ['C:/Users/conra/Documents/land-management-Algorithm/World/Pices/Train1.txt',
-                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/Train2.txt',
-                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/Train3.txt',
-                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/Train4.txt',
-                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/Train5.txt',
-                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/Train6.txt',
-                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/Train7.txt',
-                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/Train8.txt',
-                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/Train9.txt',
-                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/Train10.txt']
+    trainingPices = ['C:/Users/conra/Documents/land-management-Algorithm/World/Pices/smallTrain3/Train7.txt']
 
     planter = Planter(bagSize=400,
                       viewDistance=1,
@@ -120,15 +116,16 @@ if __name__ == '__main__':
 
     score = DeadPlantScore(planter)
 
+    trainer = PiceTrainer(batchSize=500)
+
     agent = Agent(planter, score)
     masterAi = MasterAI(agent=agent,
+                        trainer=trainer,
                         trainingPices=trainingPices,
                         hiddenSize1=32,
-                        gama=0.9,
                         lr=0.01,
                         epsilon=0.9999999999999,  # Chance not to make random move
-                        nEpochs=10000,
-                        batchSize=500,
+                        nEpochs=2000,
                         replayMemory=ReplayMemory(capacity=100_000),
                         showEvery=200,
                         printEvery=100,

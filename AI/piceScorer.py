@@ -29,7 +29,7 @@ class PiceScore:
         """ Resets the game scores """
         self.planter = planter
         self.scoreDisplay.window = planter.pice.window
-        self.piceScore, self.reward, self.coveredLand = 0, 0, 0
+        self.piceScore, self.reward, self.coveredLand, self.deadCount = 0, 0, 0, 0
         self.gameNum = epoch
         self.downStreak = 0
         self.scoreDisplay.updateStats(piceScore=self.piceScore, deadCount=self.planter.deadCount,
@@ -58,6 +58,7 @@ class DeadPlantScore(PiceScore):
 
         else:
             self.scoreDisplay.updateStats(deadCount=self.planter.deadCount)
+            self.deadCount += 1
             self.downStreak += 1
 
         if self.piceScore > self.highScore:

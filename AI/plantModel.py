@@ -49,11 +49,19 @@ class PlantModel(nn.Module):
         torch.save(self.state_dict(), file_name)
 
 
-class Qtrainer:
-    def __init__(self, lr: float, gamma: float, batchSize):
-        self.lr, self.gama, self.batchSize = lr, gamma, batchSize
+class Trainer:
+    """ Template for training models"""
+    def __init__(self):
+        pass
 
-    def trainStep(self, model: PlantModel, replayMemory: ReplayMemory):
+
+class Qtrainer(Trainer):
+    """ Trains the AI based on samples of states it encounters """
+    def __init__(self, batchSize):
+        super().__init__()
+        self.batchSize = batchSize
+
+    def trainStep(self, model: PlantModel, replayMemory: ReplayMemory, score=None):
         """ Trains the AI Model based on a sample of memories memeories """
         model.opt.zero_grad()  # Zeros the gradients collected while training and getting data
 
@@ -77,10 +85,34 @@ class Qtrainer:
 
     def _sample(self, model, replayMemory: ReplayMemory):
         if len(replayMemory) < self.batchSize:
-            return replayMemory.sample(len(replayMemory))
-        return replayMemory.sample(self.batchSize)
+            return replayMemory.sampleMoveData(len(replayMemory))
+        return replayMemory.sampleMoveData(self.batchSize)
 
     def _getReward(self, surroundings, move):
         """ Returns is the move was profitable"""
         return surroundings[move.item()]
+
+
+class PiceTrainer(Trainer):
+    """ Trains the AI based on the final score of the pice it gets """
+    def __init__(self, batchSize):
+        super().__init__()
+
+    def trainStep(self, model: PlantModel, replayMemory: ReplayMemory, score: float):
+        """ Trains the model with loss calculated only when the pice has been complete / abandoned"""
+        model.opt.zero_grad()  # Zeros the gradients collected while training and getting data
+
+        stateBatch = torch.stack([i.state for i in replayMemory.memory])  # Gets a stack of states
+        qEval = model.forward(stateBatch)  # Evaluates the nn's moves for each state
+
+        loss = torch.sum(torch.log(qEval) * score)
+
+        loss = torch.tensor(float(score), requires_grad=True)
+        loss.backward()
+        model.opt.step()
+
+        model.opt.zero_grad()
+        replayMemory.clearMoveData()
+
+
 

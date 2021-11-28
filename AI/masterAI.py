@@ -70,19 +70,20 @@ class MasterAI:
                 self.agent.newPice(epoch, pice, doRender)  # create a new pice, every showEvery
                 self.playPice(doRender)
 
-            loss = self.trainer.trainStep(self.model, self.replayMemory, self.genDeadCount)  # Trains Model
-            score = self.setScoreCount
+            epochScore = self.setScoreCount
+            loss = self.trainer.trainStep(self.model, self.replayMemory, epochScore)  # Trains Model
             self.lossCount.append(loss)
-            self.scores.append(score)
+            self.scores.append(epochScore)
             self.setScoreCount = 0
             self.genDeadCount = 0
             self.replayMemory.piceScore = 0
 
-            if score > self.maxScore:
-                self.maxScore = score
+            if epochScore > self.maxScore:
+                self.maxScore = epochScore
                 self.saveModel()
+                print("Saved Model at Score: " + str(epochScore))
 
-            if loss == 1:
+            if loss == 0:
                 break
 
     def playPice(self, doRender):
@@ -133,27 +134,15 @@ class MasterAI:
 if __name__ == '__main__':
     ''' Current tensor: [is plantable, is walkable] across vision circle'''
 
-    trainingPices = ['C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrain1/Train0.txt',
-                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrain1/Train1.txt',
-                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrain1/Train2.txt',
-                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrain1/Train3.txt',
-                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrain1/Train4.txt',
-                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrain1/Train5.txt',
-                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrain1/Train6.txt',
-                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrain1/Train7.txt',
-                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrain1/Train8.txt',
-                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrain1/Train9.txt',
-                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrain1/Train10.txt',
-                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrain1/Train11.txt',
-                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrain1/Train12.txt']
+    trainingPices = ['C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrainRoads1/Train_Back_and_fourth.txt']
 
     planter = Planter(bagSize=400,
-                      viewDistance=1,
+                      viewDistance=2,
                       pice=Pice(trainingPices[0]))
 
     score = DeadPlantScore(planter)
 
-    trainer = PiceTrainer(batchSize=500)
+    trainer = QtrainerHybrid(batchSize=500, scoreExpectation=4)
 
     agent = Agent(planter, score)
     masterAi = MasterAI(agent=agent,
@@ -162,12 +151,12 @@ if __name__ == '__main__':
                         hiddenSize1=32,
                         lr=0.005,
                         epsilon=0.9999999999999,  # Chance not to make random move
-                        nEpochs=100_000,
-                        replayMemory=ReplayMemory(capacity=100_000),
-                        showEvery=1000,
+                        nEpochs=2_000,
+                        replayMemory=ReplayMemory(capacity=10_000),
+                        showEvery=100,
                         printEvery=100,
-                        renderSleep=0.000,
-                        modelName="RowTrain_Vision1")
+                        renderSleep=0.1,
+                        modelName="Qtrain2")
 
     masterAi.runAi()
 

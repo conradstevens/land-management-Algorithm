@@ -68,8 +68,6 @@ class DeadPlantScore(PiceScore):
         return self.reward
 
 
-
-
 class ScoreDisplay:
     """ Keeps track and displays all the stats of the ai"""
 

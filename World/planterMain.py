@@ -105,6 +105,8 @@ class Planter:
         """
         x, y = self.pice.findChar('C')
         self.x, self.y = x, y
+        self.pice.piceMatrix[y][x] = Tile(x, y, '.')
+        self.pice.plantableCount += 1
         self.pice.drawChar('☻', x, y)
 
     def bagUp(self):

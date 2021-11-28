@@ -1,6 +1,8 @@
 import torch
+from World.pice import Pice
 from AI.plantModel import PlantModel
 from AI.agent import Agent
+from AI.piceScorer import *
 import time
 
 
@@ -23,20 +25,27 @@ def playPice(model: PlantModel, agent: Agent, pice: str):
 if __name__ == '__main__':
     model = loadModel(modeldir='C:/Users/conra/Documents/land-management-Algorithm/AI/Models/Model1_Is_4_Hs_32')
 
-    piceCue = ['C:/Users/conra/Documents/land-management-Algorithm/World/Pices/Train1.txt',
-               'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/Train2.txt',
-               'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/Train3.txt',
-               'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/Train4.txt',
-               'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/Train5.txt',
-               'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/Train6.txt',
-               'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/Train7.txt',
-               'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/Train8.txt',
-               'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/Train9.txt',
-               'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/Train10.txt']
+    trainingPices = ['C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrain1/Train0.txt',
+                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrain1/Train1.txt',
+                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrain1/Train2.txt',
+                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrain1/Train3.txt',
+                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrain1/Train4.txt',
+                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrain1/Train5.txt',
+                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrain1/Train6.txt',
+                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrain1/Train7.txt',
+                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrain1/Train8.txt',
+                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrain1/Train9.txt',
+                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrain1/Train10.txt',
+                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrain1/Train11.txt',
+                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrain1/Train12.txt']
 
-    agent = Agent(fileName=piceCue[0],  # Place holder function
-                  bagSize=400,
-                  viwDistance=1)
+    planter = Planter(bagSize=400,
+                      viewDistance=1,
+                      pice=Pice(trainingPices[0]))
 
-    for pice in piceCue:
+    score = DeadPlantScore(planter)
+
+    agent = Agent(planter, score)
+
+    for pice in trainingPices:
         playPice(model, agent, pice)

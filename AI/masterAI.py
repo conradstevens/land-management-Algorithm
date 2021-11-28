@@ -5,11 +5,9 @@ from AI.replayMemory import ReplayMemory
 from AI.piceScorer import *
 from World.planterMain import Planter
 from World.pice import Pice
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import torch
 import time
-
-import numpy as np
 
 
 class MasterAI:
@@ -41,6 +39,8 @@ class MasterAI:
 
         # Progress Tracker
         self.scores = []
+        self.maxScore = 0
+        self.lossCount = []
         self.setScoreCount = 0
         self.genDeadCount = 0
 
@@ -52,6 +52,7 @@ class MasterAI:
         """ runs the AI, track progress and saves the model"""
         self.trainLoop()
         self.saveModel()
+        self.plotScores()
 
         print("pass")
 
@@ -69,11 +70,20 @@ class MasterAI:
                 self.agent.newPice(epoch, pice, doRender)  # create a new pice, every showEvery
                 self.playPice(doRender)
 
-            self.scores.append(self.setScoreCount)
-            self.trainer.trainStep(self.model, self.replayMemory, self.genDeadCount)
+            loss = self.trainer.trainStep(self.model, self.replayMemory, self.genDeadCount)  # Trains Model
+            score = self.setScoreCount
+            self.lossCount.append(loss)
+            self.scores.append(score)
             self.setScoreCount = 0
             self.genDeadCount = 0
             self.replayMemory.piceScore = 0
+
+            if score > self.maxScore:
+                self.maxScore = score
+                self.saveModel()
+
+            if loss == 1:
+                break
 
     def playPice(self, doRender):
         """ runs through the pice and updates the Q-table"""
@@ -104,11 +114,38 @@ class MasterAI:
             torch.save(self.model,
                        "C:/Users/conra/Documents/land-management-Algorithm/AI/Models/" + self.modelName)
 
+    def plotScores(self):
+        """ Plots the Scores once training is complete """
+        plt.plot(self.scores)
+        plt.xlabel('Epoch Number')
+        plt.ylabel('Score')
+        plt.title('Training Progress Score')
+        plt.show()
+
+        plt.plot(self.lossCount)
+        plt.xlabel('Epoch Number')
+        plt.ylabel('Score')
+        plt.title('Training Progress Loss')
+        plt.show()
+
+
 
 if __name__ == '__main__':
     ''' Current tensor: [is plantable, is walkable] across vision circle'''
 
-    trainingPices = ['C:/Users/conra/Documents/land-management-Algorithm/World/Pices/smallTrain3/Train0.txt']
+    trainingPices = ['C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrain1/Train0.txt',
+                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrain1/Train1.txt',
+                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrain1/Train2.txt',
+                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrain1/Train3.txt',
+                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrain1/Train4.txt',
+                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrain1/Train5.txt',
+                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrain1/Train6.txt',
+                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrain1/Train7.txt',
+                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrain1/Train8.txt',
+                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrain1/Train9.txt',
+                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrain1/Train10.txt',
+                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrain1/Train11.txt',
+                     'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrain1/Train12.txt']
 
     planter = Planter(bagSize=400,
                       viewDistance=1,
@@ -123,14 +160,14 @@ if __name__ == '__main__':
                         trainer=trainer,
                         trainingPices=trainingPices,
                         hiddenSize1=32,
-                        lr=0.01,
+                        lr=0.005,
                         epsilon=0.9999999999999,  # Chance not to make random move
-                        nEpochs=2000,
+                        nEpochs=100_000,
                         replayMemory=ReplayMemory(capacity=100_000),
-                        showEvery=200,
+                        showEvery=1000,
                         printEvery=100,
                         renderSleep=0.000,
-                        modelName="Model1")
+                        modelName="RowTrain_Vision1")
 
     masterAi.runAi()
 

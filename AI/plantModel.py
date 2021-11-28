@@ -80,8 +80,12 @@ class Qtrainer(Trainer):
                                for i in range(0, len(evalMoves))])
 
         loss = torch.sum(torch.log(qEval) * doneMask * (rewards - baseline))  # Loss Calculation - Will calculate greater change is less certain of a Q-Score
+        if loss == 0:  # Prevents slightly tweaking weights when loss is zero
+            return loss.item()
         loss.backward()  # Back propagates
         model.opt.step()  # optimizes
+
+        return loss.item()
 
     def _sample(self, model, replayMemory: ReplayMemory):
         if len(replayMemory) < self.batchSize:
@@ -98,19 +102,22 @@ class PiceTrainer(Trainer):
     def __init__(self, batchSize):
         super().__init__()
 
-    def trainStep(self, model: PlantModel, replayMemory: ReplayMemory, score: float):
+    def trainStep(self, model: PlantModel, replayMemory: ReplayMemory, deadCount: float):
         """ Trains the model with loss calculated only when the pice has been complete / abandoned"""
         model.opt.zero_grad()  # Zeros the gradients collected while training and getting data
+        if deadCount == 0:  # Training on zero still tweaking the net slightly
+            return 0
 
         stateBatch = torch.stack([i.state for i in replayMemory.memory])  # Gets a stack of states
         qEval = model.forward(stateBatch)  # Evaluates the nn's moves for each state
 
-        loss = torch.sum(torch.log(qEval) * -score)
+        loss = torch.sum(torch.log(qEval) * -deadCount)
         loss.backward()
 
         model.opt.step()
         replayMemory.clearMoveData()
-        print(loss)
+
+        return loss.item()
 
 
 

@@ -108,7 +108,7 @@ class QtrainerHybrid(Qtrainer):
         """ Trains the AI Model based on a sample of memories memeories """
         model.opt.zero_grad()  # Zeros the gradients collected while training and getting data
 
-        transitionSample = self._sample(model, replayMemory)  # Gets a larger random sample of moves
+        transitionSample = replayMemory.memory  # Gets a larger random sample of moves
         batch = replayMemory.transitions(*zip(*transitionSample))  # Organizes the sample as a named tuple
 
         stateBatch = torch.stack([s for s in batch.state])  # Gets a stack of states

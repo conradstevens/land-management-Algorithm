@@ -19,13 +19,16 @@ class MasterAI:
     """
 
     def __init__(self, agent: Agent, trainer, trainingPices: list, hiddenSize1: int, lr: float, epsilon: float, nEpochs: int,
-                 replayMemory: ReplayMemory, showEvery: int, printEvery: int, renderSleep: float, modelName: str):
+                 replayMemory: ReplayMemory, showEvery: int, printEvery: int, renderSleep: float, modelName: str, model=None):
 
         # Logistical Classes
         self.agent = agent
 
         # Trainer
-        self.model = PlantModel(self.agent.inputSize, hiddenSize1, 4, lr)
+        if model is not None:
+            self.model = model
+        else:
+            self.model = PlantModel(self.agent.inputSize, hiddenSize1, 4, lr)
         self.trainer = trainer
         self.replayMemory = replayMemory
         self.trainingPices = trainingPices
@@ -41,7 +44,7 @@ class MasterAI:
         self.scores = []
         self.maxScore = 0
         self.lossCount = []
-        self.setScoreCount = 0
+        self.epochScoreCount = 0
         self.genDeadCount = 0
 
         # Save info
@@ -54,7 +57,7 @@ class MasterAI:
         self.saveModel()
         self.plotScores()
 
-        print("pass")
+        print("***** Done *****")
 
     def trainLoop(self):
         """ The loop that trains the AI """
@@ -63,25 +66,24 @@ class MasterAI:
             doPrint = epoch % self.printEvery == 0
 
             if doPrint:
-                print('Epoch num: ' + str(epoch))
+                print('Epoch num: ' + str(epoch) + '  Score: ' + str(self.epochScoreCount))
 
+            self.epochScoreCount = 0
             for pice in self.trainingPices:
                 # print(pice)
                 self.agent.newPice(epoch, pice, doRender)  # create a new pice, every showEvery
                 self.playPice(doRender)
 
-            epochScore = self.setScoreCount
-            loss = self.trainer.trainStep(self.model, self.replayMemory, epochScore)  # Trains Model
+            loss = self.trainer.trainStep(self.model, self.replayMemory, self.epochScoreCount)  # Trains Model
             self.lossCount.append(loss)
-            self.scores.append(epochScore)
-            self.setScoreCount = 0
+            self.scores.append(self.epochScoreCount)
             self.genDeadCount = 0
             self.replayMemory.piceScore = 0
 
-            if epochScore > self.maxScore:
-                self.maxScore = epochScore
+            if self.epochScoreCount > self.maxScore:
+                self.maxScore = self.epochScoreCount
                 self.saveModel()
-                print("Saved Model at Score: " + str(epochScore))
+                print("Saved Model at Score: " + str(self.epochScoreCount))
 
             if loss == 0:
                 break
@@ -100,7 +102,7 @@ class MasterAI:
             if doRender:
                 time.sleep(self.renderSleep)
 
-        self.setScoreCount += self.agent.piceScore.piceScore
+        self.epochScoreCount += self.agent.piceScore.piceScore
         self.genDeadCount += self.agent.piceScore.deadCount
         self.replayMemory.piceScore += self.agent.piceScore.piceScore
         self.agent.planter.pice.terminate()
@@ -134,7 +136,22 @@ class MasterAI:
 if __name__ == '__main__':
     ''' Current tensor: [is plantable, is walkable] across vision circle'''
 
-    trainingPices = ['C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrainRoads1/Train_Back_and_fourth.txt']
+    trainingPices = ['C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrainRoads1/Train0.txt'] #  ,
+                     #'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrainRoads1/Train1.txt',
+                     #'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrainRoads1/Train2.txt',
+                     #'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrainRoads1/Train3.txt',
+                     #'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrainRoads1/Train4.txt',
+                     #'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrainRoads1/Train5.txt',
+                     #'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrainRoads1/Train6.txt',
+                     #'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrainRoads1/Train7.txt',
+                     #'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrainRoads1/Train8.txt',
+                     #'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrainRoads1/Train9.txt',
+                     #'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrainRoads1/Train10.txt',
+                     #'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrainRoads1/Train11.txt',
+                     #'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrainRoads1/Train12.txt',
+                     #'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrainRoads1/Train13.txt',
+                     #'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrainRoads1/Train14.txt',
+                     #'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrainRoads1/Train15.txt']
 
     planter = Planter(bagSize=400,
                       viewDistance=2,
@@ -142,21 +159,24 @@ if __name__ == '__main__':
 
     score = DeadPlantScore(planter)
 
-    trainer = QtrainerHybrid(batchSize=500, scoreExpectation=4)
+    trainer = QtrainerHybrid(batchSize=500, scoreExpectation=15)
+
+    model = torch.load('C:/Users/conra/Documents/land-management-Algorithm/AI/Models/QtrainHybridStart_View2')
 
     agent = Agent(planter, score)
     masterAi = MasterAI(agent=agent,
                         trainer=trainer,
                         trainingPices=trainingPices,
                         hiddenSize1=32,
-                        lr=0.005,
-                        epsilon=0.9999999999999,  # Chance not to make random move
-                        nEpochs=2_000,
+                        lr=0.01,
+                        epsilon=0.999999999,  # Chance not to make random move
+                        nEpochs=50_000,
                         replayMemory=ReplayMemory(capacity=10_000),
-                        showEvery=100,
-                        printEvery=100,
+                        showEvery=1_000,
+                        printEvery=1,
                         renderSleep=0.1,
-                        modelName="Qtrain2")
+                        modelName="QtrainHybridStart",
+                        model=model)
 
     masterAi.runAi()
 

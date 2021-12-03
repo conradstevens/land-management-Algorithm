@@ -14,8 +14,6 @@ class MasterAI:
     """
     Oversees Agent and trainer,
     creating and working models.
-    TODO/ To be trained?
-    TODO/ Refactor to run different models
     """
 
     def __init__(self, agent: Agent, trainer, trainingPices: list, hiddenSize1: int, lr: float, epsilon: float, nEpochs: int,
@@ -34,6 +32,7 @@ class MasterAI:
         self.trainingPices = trainingPices
 
         # Training loop info
+        self.lr = lr
         self.epsilon = epsilon
         self.nEpochs = nEpochs
         self.showEvery = showEvery
@@ -147,12 +146,12 @@ if __name__ == '__main__':
                      #'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrainRoads1/Train7.txt',  # 15
                      #'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrainRoads1/Train8.txt',  # 18
                      #'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrainRoads1/Train9.txt',  # 20
-                     #'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrainRoads1/Train10.txt',  # 14
-                     #'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrainRoads1/Train11.txt',  # 19
-                     #'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrainRoads1/Train12.txt',  # 20
-                     #'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrainRoads1/Train13.txt',  # 19
-                     #'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrainRoads1/Train14.txt',  # 17
-                     #'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrainRoads1/Train15.txt']  # 17
+                     #'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrainRoads1/Train10.txt', # 14
+                     #'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrainRoads1/Train11.txt', # 19
+                     #'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrainRoads1/Train12.txt', # 20
+                     #'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrainRoads1/Train13.txt', # 19
+                     #'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrainRoads1/Train14.txt', # 17
+                     #'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrainRoads1/Train15.txt'] # 17
 
     planter = Planter(bagSize=400,
                       viewDistance=2,

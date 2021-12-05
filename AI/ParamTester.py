@@ -20,10 +20,10 @@ class ParamTester:
     def trainandStore(self):
         """ Runs all sets of parameters and stores the data in the csv"""
         for p in parameters:
-            data = self.runMasterAI(p[0], p[1], p[2])
-            self.appendData(data)
+            scores, lossCount = self.runMasterAI(p[0], p[1], p[2])
+            self.appendData(p[0], p[1], p[2], scores, lossCount)
 
-    def runMasterAI(self, viewDistance, hiddenLayer, gama):
+    def runMasterAI(self, viewDistance, hiddenLayer, epsilon):
         """ Runs a single set of parameters and returns the data """
         planter = Planter(bagSize=400, viewDistance=viewDistance, pice=Pice(trainingPices[0]))
         score = DeadPlantScore(planter)
@@ -40,29 +40,37 @@ class ParamTester:
                             showEvery=self.mAI.showEvery,
                             printEvery=self.mAI.printEvery,
                             renderSleep=self.mAI.renderSleep,
-                            modelName=self.mAI.modelName,  # subject to change
-                            model=None)  # model=model)
+                            modelName=self.mAI.modelNameOriginal,  # subject to change
+                            model=None,  # model=model)
+                            doShowCharts=False,
+                            doRender=False)
 
+        self.mAI.runAi()
+        return self.mAI.scores, self.mAI.lossCount
 
-
-    def appendData(self, data):
+    def appendData(self, viewD: int, hdLayer: int, epsilon: float, scores: list, lossCount: list):
         """ Appends the data to the CSV  """
-        pass
+        for i in range(0, len(scores)):
+            writer = csv.writer(self.trainCSV)
+            writer.writerow([i, viewD, hdLayer, epsilon, scores[i], lossCount[i]])
 
-    @staticmethod
-    def _openCSV(trainCsv):
+    def _openCSV(self, trainCsv):
         """ Open CSV and set it up to have data entered to it """
-        trainCsv = open(trainCsv, 'r+')
+        trainCsv = open(trainCsv, 'w', newline='')
         trainCsv.truncate(0)
+
+        writer = csv.writer(trainCsv)
+        writer.writerow(['Epoch', 'View Distance', 'Hidden Layer Size', 'Epsilon', 'Score', 'Loss'])
+
         return trainCsv
 
 
 if __name__ == '__main__':
     viewDistance = [1, 2]
     hiddenLayerSize = [16, 32, 64]
-    gama = [0.8, 0.999999999]
+    epsilon = [0.8, 0.999999999]
     CSVFname = 'C:/Users/conra/Documents/land-management-Algorithm/AI/Models/Train1.csv'
-    parameters = [(v, h, g) for v in viewDistance for h in hiddenLayerSize for g in gama]
+    parameters = [(v, h, g) for v in viewDistance for h in hiddenLayerSize for g in epsilon]
 
     trainingPices = ['C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrainRoads1/Train0.txt']
     # 'C:/Users/conra/Documents/land-management-Algorithm/World/Pices/RowTrainRoads1/Train0.txt',  # 19
@@ -94,13 +102,14 @@ if __name__ == '__main__':
                         hiddenSize1=32,
                         lr=0.01,
                         epsilon=0.999999999,  # Chance not to make random move
-                        nEpochs=50_000,
+                        nEpochs=10_000,
                         replayMemory=ReplayMemory(capacity=10_000),
                         showEvery=1_000,
                         printEvery=1,
                         renderSleep=0.1,
-                        modelName="QtrainHybridStart",
-                        model=None)  # model=model)
+                        modelName="ParamTestRunModels/QtrainHybridStart",
+                        model=None,  # model=model)
+                        doShowCharts=False)
 
     paramTester = ParamTester(parameters, CSVFname, masterAi)
     paramTester.trainandStore()

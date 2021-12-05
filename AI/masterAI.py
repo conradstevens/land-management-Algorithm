@@ -16,8 +16,9 @@ class MasterAI:
     creating and working models.
     """
 
-    def __init__(self, agent: Agent, trainer, trainingPices: list, hiddenSize1: int, lr: float, epsilon: float, nEpochs: int,
-                 replayMemory: ReplayMemory, showEvery: int, printEvery: int, renderSleep: float, modelName: str, model=None):
+    def __init__(self, agent: Agent, trainer, trainingPices: list, hiddenSize1: int, lr: float, epsilon: float,
+                 nEpochs: int, replayMemory: ReplayMemory, showEvery: int, printEvery: int, renderSleep: float,
+                 modelName: str, model=None, doShowCharts=True, doRender=False):
 
         # Logistical Classes
         self.agent = agent
@@ -47,21 +48,27 @@ class MasterAI:
         self.genDeadCount = 0
 
         # Save info
+        self.doshowCharts = doShowCharts
+        self.doRender = doRender
         self.hiddenSize1 = hiddenSize1
-        self.modelName = (modelName + '_Is_' + str(self.agent.inputSize) + '_Hs_' + str(self.hiddenSize1))
+        self.modelNameOriginal = modelName
+        self.modelName = (modelName + '_Is_' + str(self.agent.inputSize) +
+                          '_Hs_' + str(self.hiddenSize1) +
+                          '_Ep_' + str(self.epsilon))
 
     def runAi(self):
         """ runs the AI, track progress and saves the model"""
         self.trainLoop()
         self.saveModel()
-        self.plotScores()
+        if self.doshowCharts:
+            self.plotScores()
 
-        print("***** Done *****")
+        print("***** Done " + str(self.modelName) + " *****")
 
     def trainLoop(self):
         """ The loop that trains the AI """
         for epoch in range(0, self.nEpochs):
-            doRender = epoch % self.showEvery == 0
+            doRender = (epoch % self.showEvery == 0) and self.doRender
             doPrint = epoch % self.printEvery == 0
 
             if doPrint:
@@ -89,7 +96,7 @@ class MasterAI:
 
     def playPice(self, doRender):
         """ runs through the pice and updates the Q-table"""
-        while not agent.planter.finished and agent.piceScore.downStreak < 10:
+        while not self.agent.planter.finished and self.agent.piceScore.downStreak < 10:
             curState = self.agent.inputTensor
             surround = self.agent.getSurroundingTensor()
             action = self.agent.playAction(model=self.model, chanceDoRand=self.chanceofRandMove())
@@ -97,7 +104,7 @@ class MasterAI:
             nextState = self.agent.getInputTensor()
             move = torch.tensor([action.argmax().item()])
 
-            self.replayMemory.moveDataPush(curState, surround, action, nextState, reward, move, agent.planter.finished)
+            self.replayMemory.moveDataPush(curState, surround, action, nextState, reward, move, self.agent.planter.finished)
             if doRender:
                 time.sleep(self.renderSleep)
 
@@ -176,7 +183,9 @@ if __name__ == '__main__':
                         printEvery=1,
                         renderSleep=0.1,
                         modelName="QtrainHybridStart",
-                        model=model)
+                        model=model,
+                        doShowCharts=True,
+                        doRender=True)
 
     masterAi.runAi()
 

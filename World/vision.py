@@ -19,7 +19,7 @@ class Vision:
 
         Note: no mater the size of a vision circle. The variables are displayed in the same order.
         """
-        for x in range(0, self.rad):
+        for x in range(0, self.rad+1):
             ang = math.acos(x / self.rad)
             y = math.floor(math.sin(ang) * self.rad)
 

@@ -1,5 +1,5 @@
-Land Management Algorithm Reinforcement Learning
-
+**Land Management Algorithm Reinforcement Learning
+**
 This is a Reinforcement Learning Land Management Algorithm. Through a combination of Q-learning and final score optimization, the player/robot/smiley-face learns to cover the land entirely while minimizing the amount of wasted steps.
 
 The only input into the neural network is its immediate surroundings. These squares are coloured, while the other invisible squares are dark blue.

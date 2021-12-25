@@ -17,7 +17,7 @@ When all the data is collected from the epoch, the AI is then trained. Firstly, 
 
 ![image](https://user-images.githubusercontent.com/3459566/147395387-841aba38-a458-4eba-ad2c-83ef9d5bb2bc.png)
 
-
+The neural network quickly learns not to walk into walls and over planted land. Over the next 1000 generations it begins to develop strategies to not corner itself, then over the next 5000 generations, it learns not to pinch of access to uncovered land. 
 
 
 
